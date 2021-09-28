@@ -235,6 +235,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
     y <- cbind( id=1:nrow(x),
                fid=match(x[, colFid], x[, colId], nomatch=0),
                mid=match(x[, colMid], x[, colId], nomatch=0))
+    colnames(y) <- c(colId,colFid,colMid)
   } else {
     y <- as.matrix(x[, c(colId, colFid, colMid)])
     ## Make sure we have 0 when recoded data is provided
@@ -353,7 +354,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   # Centering  to make founders has mean zero
   #===================================================================
   # Selecting founders and missing pedigree animals
-  xF <- y[c(y[,"fid"]==0 & y[,"mid"]==0),]
+  xF <- y[c(y[, colFid]==0 & y[,colMid]==0),]
   colBVy <- (ncol(y)-length(colBV)+1):ncol(y)
   if (centerEBV == TRUE) {
     if(length(colBV)==1){

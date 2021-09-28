@@ -110,7 +110,7 @@ A function to partition breeding values by a path
 variable. The partition method is described in García-Cortés et
 al., 2008: Partition of the genetic trend to validate multiple
 selection decisions.  Animal : an international journal of animal
-bioscience. DOI: 10.1017/S175173110800205X
+bioscience. DOI:  \doi{10.1017/S175173110800205X}
 }
 \details{
 Pedigree in \code{x} must be valid in a sense that there
@@ -170,7 +170,7 @@ summary(tmp, by="gen")
 \references{
 Garcia-Cortes, L. A. et al. (2008) Partition of the
 genetic trend to validate multiple selection decisions. Animal,
-2(6):821-824. \url{http://dx.doi.org/10.1017/S175173110800205X}
+2(6):821-824. \doi{10.1017/S175173110800205X}
 }
 \seealso{
 \code{\link[AlphaPart]{summary.AlphaPart}} for summary
