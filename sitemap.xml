@@ -1,90 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/404.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/articles/alphapart-variance.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/articles/alphapart-vignette.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/index.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPart.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPart.ped.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPartSubset.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPartSum.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/UnknownFuns.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/centerPop.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/getScale.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/mapLevels.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/object.size.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/pedFixBirthYear.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/pedSetBase.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/plot.summaryAlphaPart.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/print.AlphaPart.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/print.plotSummaryAlphaPart.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/print.summaryAlphaPart.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/sEBV.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/savePlot.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/savePlot.plotSummaryAlphaPart.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/summary.AlphaPart.html</loc>
-  </url>
-  <url>
-    <loc>https://alphagenes.github.io/AlphaPart/reference/write.csv.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://alphagenes.github.io/AlphaPart/404.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/CONTRIBUTING.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/articles/alphapart-variance.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/articles/alphapart-vignette.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/articles/index.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/authors.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/index.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/news/index.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPart.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPart.ped.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPartSubset.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/AlphaPartSum.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/UnknownFuns.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/centerPop.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/getScale.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/index.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/mapLevels.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/object.size.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/pedFixBirthYear.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/pedSetBase.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/plot.summaryAlphaPart.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/print.AlphaPart.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/print.plotSummaryAlphaPart.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/print.summaryAlphaPart.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/sEBV.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/savePlot.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/savePlot.plotSummaryAlphaPart.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/summary.AlphaPart.html</loc></url>
+<url><loc>https://alphagenes.github.io/AlphaPart/reference/write.csv.html</loc></url>
 </urlset>
+
