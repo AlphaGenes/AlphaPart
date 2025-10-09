@@ -8,11 +8,11 @@
 */
 
 /* .Call calls */
-extern SEXP AlphaPartDrop(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP AlphaPartDrop(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP AlphaPartDropGroup(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"AlphaPartDrop",      (DL_FUNC) &AlphaPartDrop,       8},
+    {"AlphaPartDrop",      (DL_FUNC) &AlphaPartDrop,       9},
     {"AlphaPartDropGroup", (DL_FUNC) &AlphaPartDropGroup, 10},
     {NULL, NULL, 0}
 };

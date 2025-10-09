@@ -156,7 +156,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
                        sort=TRUE, verbose=1, profile=FALSE,
                        printProfile="end", pedType="IPP", colId=1,
                        colFid=2, colMid=3, colPath=4, colBV=5:ncol(x),
-                       colBy=NULL, center = TRUE, 
+                       colBy=NULL, center = TRUE, upgValues = NULL, 
                        scaleEBV = list()) {
   ## Test if the data is a data.frame
   if(is_tibble(x)){
@@ -261,16 +261,36 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   ## --- Sort and recode pedigree ---
   #=====================================================================
   ## Make sure that identifications are numeric if  recode=FALSE
-  test <- !sapply(x[, c(colId, colFid, colMid)], is.numeric) & !recode
+  ## Exceptions for inclusion of UPG
+  tmp <- x[!(substr(x[,colMid], 1, 3) == "UPG" | substr(x[,colFid], 1, 3) == "UPG"),]
+  test <- !sapply(tmp[, c(colId, colFid, colMid)], is.numeric) & !recode
   if (any(test)) {
-    stop("argument 'recode' must be 'TRUE' when identif ications in 'x' are not numeric")
+    stop("argument 'recode' must be 'TRUE' when identifications in 'x' are not numeric")
   }
+  ## Noting whether UPGs are present
+  upgPresent <- nrow(tmp) != nrow(x)
   #---------------------------------------------------------------------
   ## Make sure that colBV columns are numeric
   test <- !sapply(x[, c(colBV)], is.numeric)
   if (any(test)) {
     stop("colBV columns must be numeric!")
     str(x)
+  }
+  #---------------------------------------------------------------------
+  ## tests for when upg in pedigree
+  if (upgPresent) {
+    # Test assigned upgs are the same in both sire and dam
+    founders <- x[substr(x[,colMid], 1, 3) == "UPG" | substr(x[,colFid], 1, 3) == "UPG", ]
+    test <- founders[, colMid] != founders[, colFid]
+    if (any(test)) {
+      stop("When UPGs are present, the same UPG must be assigned to both parents")
+    }
+    # Test there are no missing values in sire or dams
+    test <- is.na(x[,colMid]) | x[, colMid] == "" | x[, colMid] == 0 |
+      is.na(x[,colFid]) | x[, colFid] == "" | x[, colFid] == 0
+    if (any(test)) {
+      stop("When UPGs are present, there cannot be missing values in sire or dam")
+    }
   }
   #---------------------------------------------------------------------
   ## Sort so that parents precede children
@@ -290,6 +310,8 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
                        center = controlvals$center, 
                        scale = controlvals$scale, 
                        recode = recode, unknown = unknown)
+    
+    # TODO: if centered, need to adjust the UPGvalues too. Will start without centering.
   }
   #=======================================================================
   #---------------------------------------------------------------------
@@ -297,10 +319,18 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   if (recode) {
     y <- cbind(id=seq_len(nrow(x)),
                fid=match(x[, colFid], x[, colId], nomatch=0),
-               mid=match(x[, colMid], x[, colId], nomatch=0))
+               mid=match(x[, colMid], x[, colId], nomatch=0),
+               upg=x[,colFid]) # Only need one as same UPG assigned to both parents
+    upg <- y[,4] # contains the upg
+    upg[!(substr(upg, 1, 3) == "UPG")] <- 0
+    y <- cbind(as.numeric(y[,1]), as.numeric(y[,2]), as.numeric(y[,3]))
     colnames(y) <- c(colId,colFid,colMid)
   } else {
     y <- as.matrix(x[, c(colId, colFid, colMid)])
+    upg <- y[,2] # contains the upg
+    upg[!(substr(upg, 1, 3) == "UPG")] <- 0
+    y[substr(y[,2], 1, 3) == "UPG", c(2,3)] <- 0
+    y <- cbind(as.numeric(y[,1]), as.numeric(y[,2]), as.numeric(y[,3]))
     ## Make sure we have 0 when recoded data is provided
     if (is.na(unknown)) {
       y[, c(colFid, colMid)] <- NAToUnknown(x=y[, c(colFid, colMid)],
@@ -315,21 +345,21 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   }
   y <- cbind(y, as.matrix(x[, colBV]))
   #=====================================================================
-  ## Test if father and mother codes preceede children code -
+  ## Test if father and mother codes precede children code -
   ## computational engine needs this
   #=====================================================================
   test <- y[, 2] >= y[, 1]
   if (any(test)) {
     print(x[test, ])
     print(sum(test))
-    stop("sorting/recoding problem: parent (father in this case) code must preceede children code - use arguments 'sort' and/or 'recode'")
+    stop("sorting/recoding problem: parent (father in this case) code must precede children code - use arguments 'sort' and/or 'recode'")
   }
   #---------------------------------------------------------------------
   test <- y[, 3] >= y[, 1]
   if (any(test)) {
     print(x[test, ])
     print(sum(test))
-    stop("sorting/recoding problem: parent (mother in this case) code must preceede children code - use arguments 'sort' and/or 'recode'")
+    stop("sorting/recoding problem: parent (mother in this case) code must precede children code - use arguments 'sort' and/or 'recode'")
   }
   #---------------------------------------------------------------------
   if (profile) {
@@ -403,13 +433,47 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
                              time=Sys.time(), mem=object.size(P))
   }
   #=====================================================================
+  ## Unknown parent group set up
+  #=====================================================================
+  ## Set up matrix to hold UPG values for each trait in each individual
+  upgCon <- matrix(nrow = nI, ncol = nT, data = 0)
+  
+  if (upgPresent) {
+    presentUPG <- unique(upg[substr(upg, 1, 3) == "UPG"])
+    if (!is.null(upgValues)) {
+      test <- !presentUPG %in% upgValues[,1]
+      if (any(test)) {
+        stop("Not all UPGs in the pedigree has a value in the upgValues argument")
+      }
+    } else {
+      print("upgValues have not been provided. This will be estimated for each trait using the mean of the founders.")
+      yUPG <- cbind(y, upg)
+      yUPG <- data.frame(yUPG)
+      nCol <- ncol(y)
+      yUPG[,4:nCol] <- sapply(yUPG[,4:nCol], as.numeric)
+      meanUPG <- aggregate(y[,4:nCol], by = list(yUPG$upg), FUN = mean, na.rm = TRUE)
+      upgValues <- data.frame(meanUPG[match(presentUPG, meanUPG[,1]),])
+      colnames(upgValues) <- c("UPG", lT)
+    }
+    # Add values to the founders in upgCon
+    upg_mask <- substr(upg, 1, 3) == "UPG"
+    upg_subset <- upg[upg_mask]
+    match_indices <- match(upg_subset, upgValues[,1])
+    upgCon[upg_mask, ] <- as.matrix(upgValues[match_indices, 2:ncol(upgValues)])
+  }
+  
+  # Add a "zero" row to upgCon
+  upgCon <- rbind(upgCon[1,], upgCon)
+  upgCon[1,] <- 0
+  
+  #=====================================================================
   ## --- Compute ---
   #=====================================================================
   ## Prepare stuff for C++
   c1 <- c2 <- 0.5
   if (pedType == "IPG") c2 <- 0.25
   #---------------------------------------------------------------------
-  ## Add "zero" row (simplif ies computations with missing parents!)
+  ## Add "zero" row (simplifies computations with missing parents!)
   y <- rbind(y[1, ], y)
   y[1, ] <- 0
   rownames(x) <- NULL
@@ -423,6 +487,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
                  nI_=nI, nP_=nP, nT_=nT,
                  y_=y, 
                  P_=P, Px_=cumsum(c(0, rep(nP, nT-1))),
+                 upgCon_=upgCon,
                  PACKAGE="AlphaPart")
   } else {
     N <- aggregate(x=y[-1, -c(1:3)], by=list(by=x[, colBy]), FUN=length)
@@ -440,6 +505,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   colnames(tmp$pa) <- paste(lT, "_pa", sep="")
   colnames(tmp$w)  <- paste(lT, "_w", sep="")
   colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep="_")))
+  colnames(tmp$upgCon) <- paste(lT, "_upg", sep="")
 
   if (profile) {
     timeRet <- .profilePrint(x=timeRet, task="Computing",
@@ -456,6 +522,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   colP <- colnames(tmp$pa)
   colW <- colnames(tmp$w)
   colX <- colnames(tmp$xa)
+  colUPG <- colnames(tmp$upgCon)
   #=====================================================================
   # Original Values 
   #=====================================================================
@@ -464,11 +531,20 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   }
 
   #=====================================================================
-  for (j in 1:nT) { ## j <- 1
-    Py <- seq(t+1, t+nP)
-    ret[[j]] <- cbind(tmp$pa[-1, j], tmp$w[-1, j], tmp$xa[-1, Py])
-    colnames(ret[[j]]) <- c(colP[j], colW[j], colX[Py])
-    t <- max(Py)
+  if (upgPresent){
+    for (j in 1:nT) { ## j <- 1
+      Py <- seq(t+1, t+nP)
+      ret[[j]] <- cbind(tmp$pa[-1, j], tmp$w[-1, j], tmp$upgCon[-1,j], tmp$xa[-1, Py])
+      colnames(ret[[j]]) <- c(colP[j], colW[j], colUPG[j], colX[Py])
+      t <- max(Py)
+    }
+  } else {
+    for (j in 1:nT) { ## j <- 1
+      Py <- seq(t+1, t+nP)
+      ret[[j]] <- cbind(tmp$pa[-1, j], tmp$w[-1, j], tmp$xa[-1, Py])
+      colnames(ret[[j]]) <- c(colP[j], colW[j], colX[Py])
+      t <- max(Py)
+    }
   }
   tmp <- NULL # not needed anymore
   #---------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #include "AlphaPartDrop.h"
 
-SEXP AlphaPartDrop(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP y_, SEXP P_, SEXP Px_)
+SEXP AlphaPartDrop(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP y_, SEXP P_, SEXP Px_, SEXP upgCon_)
 {
   using namespace Rcpp ;
   //' @export
@@ -19,6 +19,7 @@ SEXP AlphaPartDrop(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP y_, SE
   Rcpp::NumericMatrix ped(y_);
   Rcpp::IntegerVector P(P_);  
   Rcpp::IntegerVector Px(Px_);
+  Rcpp::NumericMatrix upgCon(upgCon_);
   
   // --- Outputs ---
       
@@ -31,8 +32,14 @@ SEXP AlphaPartDrop(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP y_, SE
   for(i = 1; i < nI+1; i++) {
     for(t = 0; t < nT; t++) {
       // Parent average (PA)
-      pa(i, t) = c1 * ped(ped(i, 1), 3+t) +
-                 c2 * ped(ped(i, 2), 3+t);
+      if (ped(i, 1) == 0 || ped(i,2) ==0){
+        pa(i, t) = upgCon(i, t);
+      }
+      else {
+        pa(i, t) = c1 * ped(ped(i, 1), 3+t) +
+          c2 * ped(ped(i, 2), 3+t);
+      }
+      
     
       // Mendelian sampling (MS)
       w(i, t) = ped(i, 3+t) - pa(i, t);
@@ -49,6 +56,12 @@ SEXP AlphaPartDrop(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP y_, SE
         xa(i, j) += c1 * xa(ped(i, 1), j) +
                     c2 * xa(ped(i, 2), j);
       }
+      
+      // collect the upg contributions
+      if (ped(i,1) != 0 || ped(i,2) != 0){
+        upgCon(i, t) = c1 * upgCon(ped(i, 1), t) +
+          c2 * upgCon(ped(i, 2), t); 
+      }
     }
   }
   
@@ -56,5 +69,6 @@ SEXP AlphaPartDrop(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP y_, SE
 
   return Rcpp::List::create(Rcpp::Named("pa", pa),
                             Rcpp::Named("w",  w),
-                            Rcpp::Named("xa", xa));
+                            Rcpp::Named("xa", xa),
+                            Rcpp::Named("upgCon", upgCon));
 }
