@@ -505,7 +505,9 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   colnames(tmp$pa) <- paste(lT, "_pa", sep="")
   colnames(tmp$w)  <- paste(lT, "_w", sep="")
   colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep="_")))
-  colnames(tmp$upgCon) <- paste(lT, "_upg", sep="")
+  if (upgPresent) {
+    colnames(tmp$upgCon) <- paste(lT, "_upg", sep="")
+  }
 
   if (profile) {
     timeRet <- .profilePrint(x=timeRet, task="Computing",
