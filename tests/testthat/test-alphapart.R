@@ -347,7 +347,7 @@ test_that("Test computation", {
   expect_equal(as.vector(unlist(ret$trt1[10, -(1:4)])), c(1, 0.3, 0.7, 0.3, 0, 0.7, 0), ignore_attr=FALSE)
 
   ##    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
-  ## 11  H    C    B    XXX  0.10  -0.065  0.165  0.235  -0.30    0.0    0.165
+  ## 11  H    C    B    XXX  0.10  -0.28  0.38  0.02  -0.30    0.0    0.38
   ## --> argument pathNA=TRUE sets unknown path to dummy path called XXX
   expect_equal(as.vector(unlist(ret$trt1[11, -(1:4)])), c(0.1, -0.28, 0.38, 0.02, -0.3, 0, 0.38), ignore_attr=FALSE)
 

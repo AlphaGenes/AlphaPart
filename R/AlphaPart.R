@@ -100,13 +100,18 @@
 #'   than Mendelian sampling effect, otherwise, if center=FALSE, the base
 #'   population values are only accounted as Mendelian sampling
 #'   effect. Default is \code{center = TRUE}.
+#' @param upgValues A dataframe with the following cloumns: the named unknown 
+#'   parent group (UPG) starting with "UPG" and a column for each trait with the 
+#'   corresponding UPG value. These are used only where UPGs are present in the 
+#'   pedigree. If not provided and UPGs are present in the pedigree, the UPG 
+#'   values are estimated from the mean of the founders for each trait.
 #' @param scaleEBV a list with two arguments defining whether is 
 #' appropriate to center and/or scale the \code{colBV} columns in respect to 
 #' the base population. The list may contain the following components:
 #' 
 #' * `center`: a logical value 
 #' * `scale`: a logical value. If `center = TRUE` and `scale = TRUE` then the 
-#'  base population is set to has zero mean and unit variance.
+#'  base population is set to have zero mean and unit variance.
 #'
 #' @example inst/examples/examples_AlphaPart.R
 #' @return An object of class \code{AlphaPart}, which can be used in
@@ -317,12 +322,18 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   #---------------------------------------------------------------------
   ## Recode all ids to 1:n
   if (recode) {
+    # Add another conditional, as only need to collect upg if upgPresent
     y <- cbind(id=seq_len(nrow(x)),
                fid=match(x[, colFid], x[, colId], nomatch=0),
                mid=match(x[, colMid], x[, colId], nomatch=0),
                upg=x[,colFid]) # Only need one as same UPG assigned to both parents
     upg <- y[,4] # contains the upg
     upg[!(substr(upg, 1, 3) == "UPG")] <- 0
+    if (is.na(unknown)){
+      upg[is.na(upg)] <- 0
+    } else if (unknown != 0) {
+      upg[upg == unknown] <- 0
+    }
     y <- cbind(as.numeric(y[,1]), as.numeric(y[,2]), as.numeric(y[,3]))
     colnames(y) <- c(colId,colFid,colMid)
   } else {

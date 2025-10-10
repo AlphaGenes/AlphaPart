@@ -32,7 +32,7 @@ SEXP AlphaPartDrop(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP y_, SE
   for(i = 1; i < nI+1; i++) {
     for(t = 0; t < nT; t++) {
       // Parent average (PA)
-      if (ped(i, 1) == 0 || ped(i,2) ==0){
+      if (ped(i, 1) == 0 && ped(i,2) == 0){ // as all UPG assigned will be to both founders
         pa(i, t) = upgCon(i, t);
       }
       else {
