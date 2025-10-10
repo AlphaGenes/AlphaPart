@@ -4,7 +4,7 @@
 #'
 #' @details
 #' Sometimes partitions of particular paths are very small or we want to sum
-#' paths that have some similarity. These actions are easy to achive manually
+#' paths that have some similarity. These actions are easy to achieve manually
 #' but this functions provides a way to do this consistently with the given
 #' object \code{x}.
 #'
@@ -16,7 +16,7 @@
 #' changed value is used in further calculations. Specify different (new) names
 #' for new targets if you want to avoid this.
 #'
-#' Be carefull with \code{remove=TRUE}, which is the default setting, as all
+#' Be careful with \code{remove=TRUE}, which is the default setting, as all
 #' partitions defined after the first (target/new) partition in vector in list
 #' will be removed, for example with \code{list(c("A", "B"), c("X", "X", "Y"),
 #' c("Z", "X"))} partitions B and Y will be removed, while X will not be removed

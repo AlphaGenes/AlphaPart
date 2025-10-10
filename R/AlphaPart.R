@@ -555,6 +555,9 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
       colnames(ret[[j]]) <- c(colP[j], colW[j], colUPG[j], colX[Py])
       t <- max(Py)
     }
+    tlP <- c(lP, "upg")
+    lP <- levels(as.factor(tlP))
+    nP <- length(lP)
   } else {
     for (j in 1:nT) { ## j <- 1
       Py <- seq(t+1, t+nP)
@@ -592,8 +595,8 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   ## Additional (meta) info. on number of traits and paths for other
   ## methods
   tmp <- colnames(x); names(tmp) <- tmp
-  ret[[nT+1]] <- list(path=tmp[colPath], nP=nP, lP=lP, nT=nT, lT=lT,
-                      warn=NULL)
+  ret[[nT+1]] <- list(path=tmp[colPath], nP=nP, lP=lP, nT=nT, lT=lT, 
+                      upgPresent=upgPresent, warn=NULL)
   ## names(ret)[nT+1] <- "info"
   names(ret) <- c(lT, "info")
 

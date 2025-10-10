@@ -253,6 +253,7 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
   lP <- object$info$lP    ## names  of paths
   nT <- object$info$nT    ## number of traits
   lT <- object$info$lT    ## names  of traits
+  upgPresent <- object$info$upgPresent ## logical for presence of UPG
   ret <- vector(mode="list", length=nT+1)
   names(ret) <- c(lT, "info")
   #---------------------------------------------------------------------
@@ -262,8 +263,8 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
   }
 
   ret$info <- list(path=object$info$path, nP=nP, nCov=nCov, lP=lP,
-                   nT=nT, lT=lT, by=by, warn=object$info$warn,
-                   labelSum=labelSum)
+                   nT=nT, lT=lT, by=by, warn=object$info$warn, 
+                   upgPresent=upgPresent, labelSum=labelSum)
   #---------------------------------------------------------------------
   ## --- Compute ---
   #---------------------------------------------------------------------
