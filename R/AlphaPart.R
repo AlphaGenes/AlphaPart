@@ -304,7 +304,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
     x <- x[order(orderPed(ped=x[, c(colId, colFid, colMid)])), ]
   }
   #=======================================================================
-  # Centering  to make founders has mean zero
+  # Centering  to make founders have mean zero
   #=======================================================================
   controlvals <- getScale()
   if (!missing(scaleEBV)) {
@@ -315,8 +315,6 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
                        center = controlvals$center, 
                        scale = controlvals$scale, 
                        recode = recode, unknown = unknown)
-    
-    # TODO: if centered, need to adjust the UPGvalues too. Will start without centering.
   }
   #=======================================================================
   #---------------------------------------------------------------------
@@ -451,13 +449,19 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   
   if (upgPresent) {
     presentUPG <- unique(upg[substr(upg, 1, 3) == "UPG"])
-    if (!is.null(upgValues)) {
+    if (!is.null(upgValues) & !center) {
       test <- !presentUPG %in% upgValues[,1]
       if (any(test)) {
         stop("Not all UPGs in the pedigree has a value in the upgValues argument")
       }
-    } else {
-      print("upgValues have not been provided. This will be estimated for each trait using the mean of the founders.")
+    } else if (is.null(upgValues) | center) {
+      if (is.null(upgValues)) {
+        print("upgValues have not been provided. This will be estimated for each trait using the mean of the founders.")
+      } else if (center) {
+        print("upgValues have been provided but will not be used as centering is TRUE. The UPG values will be estimated for each trait using the mean of the founders.")
+        upgValues <- NULL
+      }
+      
       yUPG <- cbind(y, upg)
       yUPG <- data.frame(yUPG)
       nCol <- ncol(y)
