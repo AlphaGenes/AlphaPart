@@ -39,7 +39,7 @@ library(ggridges)
 ```
 
 # Important note for when the mean of the founders is not zero
-If the mean EBV of the founder's is not zero, then the partitioning of genetic trends will be affected. This is because the method assumes the EBV to be relative to the base population, thus the mean of the founder's to be 0. To resolve, there are two options:
+If the mean EBV of the founders is not zero, then the partitioning of genetic trends will be affected. This is because the method assumes the mean EBV of the founders to be 0. To resolve, there are two options:
 
 1. Adjust the EBVs so that the mean of the founders is 0. However, all results will be centered.
 2. Assign one unknown parent group to all the founders. The unknown parent group will capture the mean of the founders.
