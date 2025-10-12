@@ -1,3 +1,8 @@
+## Changes in version 0.9.7
+NEW FEATURES
+* AlphaPart now allows to inclusion of unknown parent groups in the pedigree.
+* New Argument:
+    * upgValues: data.frame with two columns. First for the unknown parent group name, written as "UPG". Second for the value assigned to the the unknown parent group.
 
 ## Changes in version 0.9.6
 

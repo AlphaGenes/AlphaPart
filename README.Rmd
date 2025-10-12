@@ -44,7 +44,7 @@ knitr::opts_chunk$set(
 A software that implements a method for **partitioning genetic trends** to quantify the sources of genetic gain in breeding programmes. The partitioning method is described in [Garcia-Cortes et al. (2008)](https://doi.org/10.1017/S175173110800205X). The package includes the main function `AlphaPart` for partitioning breeding values and auxiliary functions for manipulating data and summarizing, visualizing, and saving outputs.
 
 
-# Instalation
+# Installation
 
 ```r
 # The easiest way to get AlphaPart

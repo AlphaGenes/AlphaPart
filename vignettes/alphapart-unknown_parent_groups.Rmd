@@ -1,0 +1,49 @@
+---
+title: "Using unknown parent groups in AlphaPart"
+author: "Rosalind Craddock"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PartitioningVariance}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height = 6, fig.width = 6)
+```
+
+Unknown parent groups allows the genetic grouping of individuals in the base population (i.e founders). Thus, considering the differences that exist between the founders, rather than assuming that all founders evolved from a single population. Originally introduced by Quass (1988), unknown parent groups have been widely used in animal breeding to account for genetic differences between herds, flocks or lines (e.g. Meyer, 1992; Kennedy and Trus, 1993; Garcia-Cortes and Toro, 2006).As EBVs are relative to the base of the defined population, the use of unknown parent groups allows the comparison of EBVs across different genetic groups, including the partitioning of genetic trends within AlphaPart.
+
+This vignette will demonstrate how to include unknown parent groups in AlphaPart, whilst describing their importance.
+
+# Loading packages
+```{r, message = FALSE}
+#devtools::install_github("AlphaGenes/AlphaPart")
+library(AlphaPart)
+library(dplyr)
+library(ggplot2)
+library(ggridges)
+```
+
+# Loading datafile
+```{r}
+```
+
+# Without unknown parent groups
+```{r}
+```
+
+# With unknown parent groups
+```{r}
+```
+
+# Important note for when the mean of the founders is not zero
+If the mean EBV of the founder's is not zero, then the partitioning of genetic trends will be affected. This is because the method assumes the EBV to be relative to the base population, thus the mean of the founder's to be 0. To resolve, there are two options:
+
+1. Adjust the EBVs so that the mean of the founders is 0. However, all results will be centered.
+2. Assign one unknown parent group to all the founders. The unknown parent group will capture the mean of the founders.
+
+# To Summarise
+
+# References

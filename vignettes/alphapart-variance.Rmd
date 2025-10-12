@@ -20,7 +20,7 @@ In addition to the contribution of paths to changes in genetic mean, breeding pr
 # Loading packages
 ```{r, message=FALSE}
 #=======================================================================
-# Packges
+# Packages
 #=======================================================================
 #devtools::install_github("AlphaGenes/AlphaPart")
 library(AlphaPart)
