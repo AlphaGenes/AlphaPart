@@ -402,3 +402,32 @@ test_that("Test computation", {
 #  expect_equal(tmp1$info$profile,  tmp2$info$profile)
 #})
 
+test_that("Test unknown parent group", {
+  ## Small pedigree, with two unknown parent groups and one trait
+  ped <- data.frame(
+    id = 1:7,
+    fid = c("UPG1", "UPG1", "UPG2", "UPG2", 1, 3, 6),
+    mid = c("UPG1", "UPG1", "UPG2", "UPG2", 2, 4, 5),
+    group = c(0, 1, 0, 1, 1, 0, 0),
+    trt1=c(2, 0, 0, 1, 1, 1, 2))
+  
+  ret <- AlphaPart(x=ped[, c("id", "fid", "mid", "group", "trt1")], verbose=0,
+                     center=FALSE)
+  ## Results (TO DO)
+  expect_equal(as.vector(unlist(ret$trt1[1, -(1:4)])), c(0.56, 0, 0.56, 0.56, 0, 0, 0), ignore_attr=FALSE)
+  
+  ## Small pedigree, with two unknown parent groups and two trait
+  ped <- data.frame(
+    id = 1:7,
+    fid = c("UPG1", "UPG1", "UPG2", "UPG2", 1, 3, 6),
+    mid = c("UPG1", "UPG1", "UPG2", "UPG2", 2, 4, 5),
+    group = c(0, 1, 0, 1, 1, 0, 0),
+    trt1=c(2, 0, 0, 1, 1, 1, 2),
+    trt2 =c(1, 0, 0, 1, 0, 1, 1))
+  
+  ret <- AlphaPart(x=ped[, c("id", "fid", "mid", "group", "trt1", "trt2")], verbose=0,
+                   center=FALSE)
+  ## Results (TO DO)
+  expect_equal(as.vector(unlist(ret$trt1[1, -(1:4)])), c(0.56, 0, 0.56, 0.56, 0, 0, 0), ignore_attr=FALSE)
+  
+})
