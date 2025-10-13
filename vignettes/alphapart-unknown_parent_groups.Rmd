@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, fig.height = 6, fig.width = 6)
 ```
 
-Unknown parent groups allows the genetic grouping of individuals in the base population (i.e founders). Thus, considering the differences that exist between the founders, rather than assuming that all founders evolved from a single population. Originally introduced by Quass (1988), unknown parent groups have been widely used in animal breeding to account for genetic differences between herds, flocks or lines (e.g. Meyer, 1992; Kennedy and Trus, 1993; Garcia-Cortes and Toro, 2006).As EBVs are relative to the base of the defined population, the use of unknown parent groups allows the comparison of EBVs across different genetic groups, including the partitioning of genetic trends within AlphaPart.
+Unknown parent groups allows the genetic grouping of individuals in the base population (i.e founders). Thus, considering the differences that exist between the founders, rather than assuming that all founders evolved from a single population. Originally introduced by Quass (1988), unknown parent groups have been widely used in animal breeding to account for genetic differences between herds, lines, or over time. As EBVs are relative to the base of the defined population, the use of unknown parent groups allows the comparison of EBVs across different genetic groups, including the partitioning of genetic trends within AlphaPart.
 
 This vignette will demonstrate how to include unknown parent groups in AlphaPart using a small and large example, whilst describing their importance.
 
@@ -43,9 +43,96 @@ smallPedData <- data.frame(id = 1:7,
                            bv = c(2, 0, 0, 1, 1, 1, 2),
                            gen = c(1, 1, 1, 1, 2, 2, 3))
 
-# Plot directed acyclic graph of the smallPedigree
+smallPedData
 
+```
 
+```{r, include=FALSE}
+plot_standard_pedigree_base <- function(ped_data) {
+  # Calculate positions for standard pedigree layout
+  # Group by generation and arrange within generation
+  gen_counts <- table(ped_data$gen)
+  max_in_gen <- max(gen_counts)
+  
+  # Create position matrix
+  positions <- data.frame(id = ped_data$id, x = 0, y = 0)
+  
+  for(g in unique(ped_data$gen)) {
+    gen_ids <- ped_data$id[ped_data$gen == g]
+    n_in_gen <- length(gen_ids)
+    
+    # Center individuals within generation
+    if(n_in_gen == 1) {
+      x_positions <- max_in_gen / 2 + 1
+    } else {
+      x_positions <- seq(1, max_in_gen + 1, length.out = n_in_gen)
+    }
+    
+    for(i in 1:n_in_gen) {
+      positions[positions$id == gen_ids[i], "x"] <- x_positions[i]
+      positions[positions$id == gen_ids[i], "y"] <- max(ped_data$gen) - g + 1
+    }
+  }
+  
+  # Set up the plot
+  plot(NULL, xlim = c(0, max_in_gen + 2), 
+       ylim = c(0.5, max(ped_data$gen) + 0.5),
+       xlab = "", ylab = "Generation",
+       main = "", axes = FALSE)
+  
+  # Add generation labels
+  axis(2, at = 1:max(ped_data$gen), 
+       labels = max(ped_data$gen):1, las = 1)
+  
+  # FIRST: Draw family connections (so they appear behind nodes)
+  for(i in 1:nrow(ped_data)) {
+    current_id <- ped_data$id[i]
+    sire_id <- ped_data$sireId[i]
+    dam_id <- ped_data$damId[i]
+    
+    if(sire_id != 0 && dam_id != 0) {
+      current_pos <- positions[positions$id == current_id, ]
+      sire_pos <- positions[positions$id == sire_id, ]
+      dam_pos <- positions[positions$id == dam_id, ]
+      
+      # Draw horizontal line between parents
+      lines(c(sire_pos$x, dam_pos$x), c(sire_pos$y, dam_pos$y), lwd = 2)
+      
+      # Draw vertical line down from parents
+      mid_x <- (sire_pos$x + dam_pos$x) / 2
+      lines(c(mid_x, mid_x), c(sire_pos$y, current_pos$y), lwd = 2)
+      
+      # Draw horizontal line to offspring
+      lines(c(mid_x, current_pos$x), c(current_pos$y, current_pos$y), lwd = 2)
+    }
+  }
+  
+  # SECOND: Draw individuals (so they appear on top of lines)
+  for(i in 1:nrow(ped_data)) {
+    pos <- positions[positions$id == ped_data$id[i], ]
+    
+    if(ped_data$sex[i] == 1) {  # Male - square
+      rect(pos$x - 0.2, pos$y - 0.15, pos$x + 0.2, pos$y + 0.15, 
+           col = "lightblue", border = "black", lwd = 2)
+    } else {  # Female - circle
+      symbols(pos$x, pos$y, circles = 0.2, inches = FALSE, 
+              bg = "pink", fg = "black", lwd = 2, add = TRUE)
+    }
+    
+    # Add ID label
+    text(pos$x, pos$y, labels = ped_data$id[i], cex = 0.8, font = 2)
+  }
+  
+  # Add legend
+  legend("topright", legend = c("Male", "Female"), 
+         pch = c(22, 21), pt.bg = c("lightblue", "pink"),
+         pt.cex = 2, cex = 0.8)
+}
+```
+
+### Visualise the small pedigree example
+```{r}
+plot_standard_pedigree_base(smallPedData)
 ```
 
 ## Without unknown parent groups
@@ -98,6 +185,9 @@ Referring to the first generation, the sum of the males (blue) and females (red)
 # Large pedigree example
 ## Load data for the large pedigree example
 ```{r}
+#=======================================================================
+## Large pedigree example
+#=======================================================================
 largePedData <- read.table("../inst/ped_ebvs_sex.txt", header = T)
 largePedData$EBV <- largePedData$EBV - 40
 # Add year
