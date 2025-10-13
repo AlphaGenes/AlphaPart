@@ -15,9 +15,10 @@ knitr::opts_chunk$set(echo = TRUE, fig.height = 6, fig.width = 6)
 
 Unknown parent groups allows the genetic grouping of individuals in the base population (i.e founders). Thus, considering the differences that exist between the founders, rather than assuming that all founders evolved from a single population. Originally introduced by Quass (1988), unknown parent groups have been widely used in animal breeding to account for genetic differences between herds, flocks or lines (e.g. Meyer, 1992; Kennedy and Trus, 1993; Garcia-Cortes and Toro, 2006).As EBVs are relative to the base of the defined population, the use of unknown parent groups allows the comparison of EBVs across different genetic groups, including the partitioning of genetic trends within AlphaPart.
 
-This vignette will demonstrate how to include unknown parent groups in AlphaPart, whilst describing their importance.
+This vignette will demonstrate how to include unknown parent groups in AlphaPart using a small and large example, whilst describing their importance.
 
-# Loading packages
+## Loading packages
+
 ```{r, message = FALSE}
 #devtools::install_github("AlphaGenes/AlphaPart")
 library(AlphaPart)
@@ -26,24 +27,141 @@ library(ggplot2)
 library(ggridges)
 ```
 
-# Loading datafile
+# Small pedigree example
+
+## Create data for the small pedigree example
+
 ```{r}
+
+#=======================================================================
+## Small pedigree example
+#=======================================================================
+smallPedData <- data.frame(id = 1:7,
+                           sireId = c(0, 0, 0, 0, 1,3,6),
+                           damId = c(0, 0, 0, 0, 2,4,5),
+                           sex = c(0, 1, 0, 1, 1, 0, 0),
+                           bv = c(2, 0, 0, 1, 1, 1, 2),
+                           gen = c(1, 1, 1, 1, 2, 2, 3))
+
+# Plot directed acyclic graph of the smallPedigree
+
+
 ```
 
-# Without unknown parent groups
+## Without unknown parent groups
+
 ```{r}
+smallPedNoUPG <- AlphaPart(x = smallPedData, colBV = 5, center = FALSE)
+smallPedNoUPG$bv
 ```
 
-# With unknown parent groups
+## Plot by the generation
 ```{r}
+smallPedNoUPGSum <- summary(smallPedNoUPG, by = "gen")
+plot(smallPedNoUPGSum)
+```
+The genetic trend (in black) is the sum of the two contributing paths: blue (males) and red (females). This small example shows the higher contribution of males than females to the genetic trend. 
+
+## With unknown parent groups
+
+```{r}
+smallPedData[c(1:2), c(2:3)]<- "UPG1" # Assign unknown parent group to founders
+smallPedData[c(3:4), c(2:3)]<- "UPG2" # Assign unknown parent group to founders
+
+smallPedUPG <- AlphaPart(x = smallPedData, colBV = 5, center = FALSE) # upgValue = NULL, we will use the mean of the founders for the unknown parnt group values.
+
+data.frame(c(smallPedNoUPG$bv[c(1, 6:10)], smallPedUPG$bv[c(6:11)]))
+```
+## Plot by generation
+```{r}
+smallPedUPGSum <- summary(smallPedUPG, by = "gen")
+plotNoUPG <- ggplot(smallPedNoUPGSum$bv, aes(x = gen)) + 
+  geom_line(aes(y = Sum), color = "black") +
+  geom_line(aes(y = `0`), color = "blue") +
+  geom_line(aes(y = `1`), color = "red") + 
+  ylim(c(-0.15, 2)) + ylab("EBV") + xlab("Generation")
+plotUPG <- ggplot(smallPedUPGSum$bv, aes(x = gen)) +
+  geom_line(aes(y = Sum), color = "black") +
+  geom_line(aes(y = `0`), color = "blue") +
+  geom_line(aes(y = `1`), color = "red") +
+  geom_line(aes(y = upg), color = "green") + 
+  ylim(c(-0.15, 2)) + ylab("EBV") + xlab("Generation")
+ggpubr::ggarrange(plotNoUPG + ggtitle("Without unknown parent groups"),
+                  plotUPG + ggtitle("With unknown parent groups"),
+                  ncol = 2, nrow = 1)
+```
+
+When we include unknown parent groups, we consider the contribution of the founder's origin to the partitioned genetic trends. In this case, this shifts the genetic trends down by a value of 0.5 in all generations, as the unknown parent group contribution (in green) is equal to 0.5.
+
+Referring to the first generation, the sum of the males (blue) and females (red) contribution is 0.75 without unknown parent groups, but **zero** with unknown parent groups. Thus, the males and females contribution is relative to the given population and directly comparable to each other when unknown parent groups are included. The difference between the overall genetic trends with the sum of the males and females contribution is captured in the unknown parent group contribution (green). 
+
+# Large pedigree example
+## Load data for the large pedigree example
+```{r}
+largePedData <- read.table("../inst/ped_ebvs_sex.txt", header = T)
+largePedData$EBV <- largePedData$EBV - 40
+# Add year
+largePedData <- largePedData[,c(1,2,3,5,4)]
+year <- c(rep(1,1100))
+for (i in 2:11){ year=c(year,rep(i,2000)) }
+largePedData$year <- year
+
+head(largePedData)
+
+```
+
+## Without unknown parent groups
+```{r}
+largePedNoUPG <- AlphaPart(x = largePedData, colBV = 5, center = FALSE)
+largePedNoUPGSum <- summary(largePedNoUPG, by = "year")
+plot(largePedNoUPGSum)
+```
+
+## With unknown parent groups
+```{r}
+# Add UPG by sex (UPG1 for males, UPG2 for females)
+test <- largePedData$dam == 0 & largePedData$sire == 0 & largePedData$sex == 1
+largePedData[test, c('sire', 'dam')] <- "UPG1"
+test <- largePedData$dam == 0 & largePedData$sire == 0 & largePedData$sex == 2
+largePedData[test, c('sire', 'dam')] <- "UPG2"
+
+# Run AlphaPeel
+largePedUPG <- AlphaPart(x = largePedData, colBV = 5, center = FALSE) # upgValue = NULL, we will use the mean of the founders for the unknown parent group values.
+largePedUPGSum <- summary(largePedUPG, by = "year")
+
+# Plot both no UPG and UPG together
+plotNoUPG <- ggplot(largePedNoUPGSum$EBV, aes(x = year)) + 
+  geom_line(aes(y = Sum), color = "black") +
+  geom_line(aes(y = `1`), color = "blue") +
+  geom_line(aes(y = `2`), color = "red") + 
+  ylim(c(-50, 30)) + ylab("EBV") + xlab("Generation")
+plotUPG <- ggplot(largePedUPGSum$EBV, aes(x = year)) +
+  geom_line(aes(y = Sum), color = "black") +
+  geom_line(aes(y = `1`), color = "blue") +
+  geom_line(aes(y = `2`), color = "red") +
+  geom_line(aes(y = upg), color = "green") + 
+  ylim(c(-50, 30)) + ylab("EBV") + xlab("Generation")
+ggpubr::ggarrange(plotNoUPG + ggtitle("Without unknown parent groups"),
+                  plotUPG + ggtitle("With unknown parent groups"),
+                  ncol = 2, nrow = 1)
 ```
 
 # Important note for when the mean of the founders is not zero
+
 If the mean EBV of the founders is not zero, then the partitioning of genetic trends will be affected. This is because the method assumes the mean EBV of the founders to be 0. To resolve, there are two options:
 
-1. Adjust the EBVs so that the mean of the founders is 0. However, all results will be centered.
-2. Assign one unknown parent group to all the founders. The unknown parent group will capture the mean of the founders.
+1.  Adjust the EBVs so that the mean of the founders is 0. However, all results will be centered.
+2.  Assign one unknown parent group to all the founders. The unknown parent group will capture the mean of the founders.
 
 # To Summarise
+Unknown parent groups allow the genetic grouping of individuals in the base population. This allows comparison of the genetic trends across different genetic groups and removes the assumption that all founders evolved from a single population. Additionally, it removes the assumption that the mean EBV of the founders is zero. For inclusion of unknown parent groups in AlphaPart():
+
+1. Remove all half-founders by assigning dummy individuals and estimating their EBVs.
+2. Assign unknown parent groups to all individuals in the base population, ensuring each unknown parent group name begins with "UPG" and the unknown parent group does not have it's own individual record.
+3. Use `upgValues` argument to assign the EBV for each unknown parent group, otherwise, the mean EBV of the founders will be assigned to each unknown parent group.
+4. Run AlphaPart() as normal, ensuring `center = FALSE`.
 
 # References
+•	García-Cortés LA, Martínez-Ávila JC, Toro MA (2008). Partition of the genetic trend to validate multiple selection decisions. Animal 2:821–4.
+•	Quaas RL (1988). Additive genetic model with groups and relationships. Journal of Dairy Science 71(5):1338–1345. https://doi.org/10.3168/jds.S0022-0302(88)79691-5
+
