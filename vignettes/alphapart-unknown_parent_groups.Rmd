@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, fig.height = 6, fig.width = 6)
 ```
 
-Unknown parent groups allows the genetic grouping of individuals in the base population (i.e founders). Thus, considering the differences that exist between the founders, rather than assuming that all founders evolved from a single population. Originally introduced by Quass (1988), unknown parent groups have been widely used in animal breeding to account for genetic differences between herds, lines, or over time. As EBVs are relative to the base of the defined population, the use of unknown parent groups allows the comparison of EBVs across different genetic groups, including the partitioning of genetic trends within AlphaPart.
+Unknown parent groups allows the genetic grouping of individuals in the base population (i.e founders). Thus, considering the differences that exist between the founders, rather than assuming that all founders evolved from a single population. Originally introduced by Quass (1988), unknown parent groups are fitted as a fixed effect and have been widely used in animal breeding to account for genetic differences between herds, lines, or from incomplete pedigrees. We have included this in AlphaPart to separate the effect of the missing ancestry to the partitioned genetic trends.
 
 This vignette will demonstrate how to include unknown parent groups in AlphaPart using a small and large example, whilst describing their importance.
 
@@ -159,6 +159,7 @@ smallPedUPG <- AlphaPart(x = smallPedData, colBV = 5, center = FALSE) # upgValue
 
 data.frame(c(smallPedNoUPG$bv[c(1, 6:10)], smallPedUPG$bv[c(6:11)]))
 ```
+
 ## Plot by generation
 ```{r}
 smallPedUPGSum <- summary(smallPedUPG, by = "gen")
@@ -178,7 +179,7 @@ ggpubr::ggarrange(plotNoUPG + ggtitle("Without unknown parent groups"),
                   ncol = 2, nrow = 1)
 ```
 
-When we include unknown parent groups, we consider the contribution of the founder's origin to the partitioned genetic trends. In this case, this shifts the genetic trends down by a value of 0.5 in all generations, as the unknown parent group contribution (in green) is equal to 0.5.
+When we include unknown parent groups, we separate the contribution of the founder's origin from the partitioned genetic trends. In this case, this shifts the genetic trends down by a value of 0.5 in all generations, as the unknown parent group contribution (in green) is equal to 0.5.
 
 Referring to the first generation, the sum of the males (blue) and females (red) contribution is 0.75 without unknown parent groups, but **zero** with unknown parent groups. Thus, the males and females contribution is relative to the given population and directly comparable to each other when unknown parent groups are included. The difference between the overall genetic trends with the sum of the males and females contribution is captured in the unknown parent group contribution (green). 
 
