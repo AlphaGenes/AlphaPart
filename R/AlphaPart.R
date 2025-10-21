@@ -99,7 +99,7 @@
 #'   population mean and attributes it as parent average effect rather
 #'   than Mendelian sampling effect, otherwise, if center=FALSE, the base
 #'   population values are only accounted as Mendelian sampling
-#'   effect. Default is \code{center = TRUE}.
+#'   effect. Default is \code{center = FALSE}.
 #' @param scaleEBV a list with two arguments defining whether is 
 #' appropriate to center and/or scale the \code{colBV} columns in respect to 
 #' the base population. The list may contain the following components:
@@ -156,7 +156,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
                        sort=TRUE, verbose=1, profile=FALSE,
                        printProfile="end", pedType="IPP", colId=1,
                        colFid=2, colMid=3, colPath=4, colBV=5:ncol(x),
-                       colBy=NULL, center = TRUE, 
+                       colBy=NULL, center = FALSE, 
                        scaleEBV = list()) {
   ## Test if the data is a data.frame
   if(is_tibble(x)){
