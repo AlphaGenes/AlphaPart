@@ -83,12 +83,12 @@
 #'   Parent 1 (say father), and one of Grandparents of Parent 2 (say
 #'   maternal grandfather).
 #' @param colId Numeric or character, position or name of a column
-#'   holding individual identif ication.
+#'   holding individual identification.
 #' @param colFid Numeric or character, position or name of a column
-#'   holding father identif ication.
+#'   holding father identification.
 #' @param colMid Numeric or character, position or name of a column
-#'   holding mother identif ication or maternal grandparent identif
-#'   ication if \code{pedType="IPG"} .
+#'   holding mother identification or maternal grandparent identification 
+#'   if \code{pedType="IPG"} .
 #' @param colPath Numeric or character, position or name of a column
 #'   holding path information.
 #' @param colBV Numeric or character, position(s) or name(s) of
@@ -330,6 +330,36 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
     print(x[test, ])
     print(sum(test))
     stop("sorting/recoding problem: parent (mother in this case) code must preceede children code - use arguments 'sort' and/or 'recode'")
+  }
+  #=======================================================================
+  # Conditional statement to warn users to use upgs, 
+  # where the base population BV mean is not 0 and center = FALSE.
+  if (!center) {
+    # Check if any founder has non-zero mean breeding values
+    founders <- y[, 2] == 0 & y[, 3] == 0
+    founder_bv_means <- sapply(4:ncol(y), function(col) mean(y[founders, col]))
+    if (any(abs(founder_bv_means) > 1e-2)) {
+      # Verify by checking if a founder's BV equals mean of their offspring
+      basepop <- y[founders, 1]
+      is_offspring <- y[, 2] %in% basepop | y[, 3] %in% basepop
+      offspring <- y[is_offspring, ]
+      
+      # Pick one founder with offspring
+      test_founder <- offspring[1, 2]  # Using sire of first offspring
+      sibs <- offspring[, 2] == test_founder | offspring[, 3] == test_founder
+      sib_mean <- sapply(4:ncol(y), function(col) mean(offspring[sibs, col]))
+      
+      # Get parents' BVs
+      sire_bv <- y[y[, 1] == offspring[1, 2], 4:ncol(y)]
+      dam_bv <- y[y[, 1] == offspring[1, 3], 4:ncol(y)]
+      expected_mean <- 0.5 * (sire_bv + dam_bv)
+      
+      if (any(abs(sib_mean - expected_mean) > 1e-10)) {
+        warning("The base population breeding value mean is not zero in at least one trait input. ",
+                "Unless already implemented, consider using unknown parent groups ",
+                "as described in [link to vignette].")
+      }
+    }
   }
   #---------------------------------------------------------------------
   if (profile) {

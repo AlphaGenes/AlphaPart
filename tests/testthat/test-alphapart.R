@@ -402,3 +402,66 @@ test_that("Test computation", {
 #  expect_equal(tmp1$info$profile,  tmp2$info$profile)
 #})
 
+test_that("Test unknown parent group", {
+  ## Small pedigree, with two unknown parent groups and one trait
+  ped <- data.frame(
+    id = c("UPG1", "UPG2", 1:7),
+    fid = c(0, 0, "UPG1", "UPG1", "UPG2", "UPG2", 1, 3, 6),
+    mid = c( 0, 0, "UPG1", "UPG1", "UPG2", "UPG2", 2, 4, 5),
+    group = c("UPG1", "UPG2", 0, 1, 0, 1, 1, 0, 0),
+    trt1=c(1, 0.5, 2, 0, 0, 1, 1, 1, 2))
+  
+  ret <- AlphaPart(x=ped[, c("id", "fid", "mid", "group", "trt1")], verbose=0,
+                   center=FALSE)
+  
+  ## Results
+  # Id UPG1
+  expect_equal(as.vector(unlist(ret$trt1[1, -(1:4)])), c(1, 0, 1, 0, 0, 1, 0), ignore_attr=FALSE)
+  # Id UPG2
+  expect_equal(as.vector(unlist(ret$trt1[2, -(1:4)])), c(0.5, 0, 0.5, 0, 0, 0, 0.5), ignore_attr=FALSE)
+  # Id 1
+  expect_equal(as.vector(unlist(ret$trt1[3, -(1:4)])), c(2, 1, 1, 1, 0, 1, 0), ignore_attr=FALSE)
+  # Id 2
+  expect_equal(as.vector(unlist(ret$trt1[4, -(1:4)])), c(0, 1, -1, 0, -1, 1, 0), ignore_attr=FALSE)
+  # Id 3
+  expect_equal(as.vector(unlist(ret$trt1[5, -(1:4)])), c(0, 0.5, -0.5, -0.5, 0, 0, 0.5), ignore_attr=FALSE)
+  # Id 4
+  expect_equal(as.vector(unlist(ret$trt1[6, -(1:4)])), c(1, 0.5, 0.5, 0, 0.5, 0.0, 0.5), ignore_attr=FALSE)
+  # Id 5
+  expect_equal(as.vector(unlist(ret$trt1[7, -(1:4)])), c(1, 1, 0, 0.5, -0.5, 1, 0), ignore_attr=FALSE)
+  # Id 6
+  expect_equal(as.vector(unlist(ret$trt1[8, -(1:4)])), c(1, 0.5, 0.5, 0.25, 0.25, 0, 0.5), ignore_attr=FALSE)
+  # Id 7
+  expect_equal(as.vector(unlist(ret$trt1[9, -(1:4)])), c(2, 1, 1, 1.375, -0.125, 0.5, 0.25), ignore_attr=FALSE)
+  
+  ## Small pedigree, with two unknown parent groups and two trait
+  ped <- data.frame(
+    id = c("UPG1", "UPG2", 1:7),
+    fid = c(0, 0, "UPG1", "UPG1", "UPG2", "UPG2", 1, 3, 6),
+    mid = c(0, 0, "UPG1", "UPG1", "UPG2", "UPG2", 2, 4, 5),
+    group = c("UPG1", "UPG2", 0, 1, 0, 1, 1, 0, 0),
+    trt1=c(1, 0.5, 2, 0, 0, 1, 1, 1, 2),
+    trt2 =c(2, 0.5, 2, 2, 0, 1, 2, 1, 1))
+  
+  ret <- AlphaPart(x=ped[, c("id", "fid", "mid", "group", "trt1", "trt2")], verbose=0,
+                   center=FALSE)
+  ## Results
+  # Id UPG1
+  expect_equal(as.vector(unlist(ret$trt2[1, -(1:4)])), c(2, 0, 2, 0, 0, 2, 0), ignore_attr=FALSE)
+  # Id UPG2
+  expect_equal(as.vector(unlist(ret$trt2[2, -(1:4)])), c(0.5, 0, 0.5, 0, 0, 0, 0.5), ignore_attr=FALSE)
+  # Id 1
+  expect_equal(as.vector(unlist(ret$trt2[3, -(1:4)])), c(2, 2, 0, 0, 0, 2, 0), ignore_attr=FALSE)
+  # Id 2
+  expect_equal(as.vector(unlist(ret$trt2[4, -(1:4)])), c(2, 2, 0, 0, 0, 2, 0), ignore_attr=FALSE)
+  # Id 3
+  expect_equal(as.vector(unlist(ret$trt2[5, -(1:4)])), c(0, 0.5, -0.5, -0.5, 0, 0, 0.5), ignore_attr=FALSE)
+  # Id 4
+  expect_equal(as.vector(unlist(ret$trt2[6, -(1:4)])), c(1, 0.5, 0.5, 0, 0.5, 0, 0.5), ignore_attr=FALSE)
+  # Id 5
+  expect_equal(as.vector(unlist(ret$trt2[7, -(1:4)])), c(2, 2, 0, 0, 0, 2, 0), ignore_attr=FALSE)
+  # Id 6
+  expect_equal(as.vector(unlist(ret$trt2[8, -(1:4)])), c(1, 0.5, 0.5, 0.25, 0.25, 0, 0.5), ignore_attr=FALSE)
+  # Id 7
+  expect_equal(as.vector(unlist(ret$trt2[9, -(1:4)])), c(1, 1.5, -0.5, -0.375, 0.125, 1, 0.25), ignore_attr=FALSE)
+})
