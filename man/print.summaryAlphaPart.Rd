@@ -19,6 +19,7 @@ Print method for objects of the class
 }
 \examples{
 ## --- Partition additive genetic values by loc ---
+data(AlphaPart.ped)
 res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2"))
 
 ## Summarize whole population

@@ -89,7 +89,8 @@ ggplot2 graphics.
 \examples{
 \donttest{
 
-## Partition additive genetic values by country
+## Partition genetic values by country
+data(AlphaPart.ped)
 (res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2")))
 
 ## Summarize population by generation (=trend)

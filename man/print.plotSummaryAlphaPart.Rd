@@ -21,7 +21,8 @@ Plot output object from
 \code{\link[AlphaPart]{plot.summaryAlphaPart}}.
 }
 \examples{
-## Partition additive genetic values
+## Partition genetic values
+data(AlphaPart.ped)
 (res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2")))
 
 ## Summarize population by generation (=trend)

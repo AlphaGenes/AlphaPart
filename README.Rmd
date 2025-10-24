@@ -83,6 +83,7 @@ library(AlphaPart)
 #       https://github.com/AlphaGenes/AlphaPart/issues/25
 
 ## Partition additive genetic values by country and sex
+data(AlphaPart.ped)
 AlphaPart.ped$country.gender <- with(AlphaPart.ped, paste(country, gender, sep="-"))
 (res <- AlphaPart(x=AlphaPart.ped, colPath="country.gender", colBV=c("bv1", "bv2")))
 #> Size:
