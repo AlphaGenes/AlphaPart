@@ -1,4 +1,4 @@
-## Partition additive genetic values
+## Partition genetic values
 res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2"))
 
 ## Write summary on the disk and collect saved file names

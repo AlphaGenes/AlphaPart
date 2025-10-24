@@ -15,4 +15,5 @@
 #'   \item{bv2}{Breeding value for trait 1}
 #' }
 #' @source Simulation.
+#' @export
 "AlphaPart.ped"

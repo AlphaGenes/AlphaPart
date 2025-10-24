@@ -1,9 +1,3 @@
-#=======================================================================
-# Print
-#=======================================================================
-#-----------------------------------------------------------------------
-# Print plotSummaryAlphaPart
-#-----------------------------------------------------------------------
 #' @rdname print.plotSummaryAlphaPart
 #' @method print plotSummaryAlphaPart
 #' @title Print a plot generate by the function
@@ -40,9 +34,6 @@ print.plotSummaryAlphaPart <- function (x, ask=interactive(), ...) {
   }
 }
 
-#-----------------------------------------------------------------------
-# Print summaryAlphaPart
-#-----------------------------------------------------------------------
 #' @title Print method for objects of the class summaryAlphaPart.
 #' @rdname print.summaryAlphaPart
 #' @method print summaryAlphaPart
@@ -75,9 +66,6 @@ print.summaryAlphaPart <- function(x, ...) {
   cat("\n")
 }
 
-#-----------------------------------------------------------------------
-# Print AlphaPart
-#-----------------------------------------------------------------------
 #' @title Print method for the output of AlphaPart function.
 #' @rdname print.AlphaPart
 #' @method print AlphaPart
@@ -121,9 +109,6 @@ print.AlphaPart <- function (x, n=6, ...) {
   cat("\n")
 }
 
-#=======================================================================
-# Summary
-#=======================================================================
 #' @title A function to summarize AlphaPart object.
 #' @rdname summary.AlphaPart
 #' @method summary AlphaPart
@@ -182,18 +167,14 @@ print.AlphaPart <- function (x, n=6, ...) {
 summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
                               subset=NULL, sums=FALSE, cov = FALSE,
                               ...) {
-  #---------------------------------------------------------------------
   ## --- Setup ---
-  #---------------------------------------------------------------------
   groupSummary <- sums
-  #---------------------------------------------------------------------
   # Test Alpha Part Class
   test <- !inherits(object, "AlphaPart")
 
   if (test) {
     stop("'object' must be of a AlphaPart class")
   }
-  #---------------------------------------------------------------------
   # Transforming FUN in a function
   test <- is.character(FUN)
   if(test==TRUE){
@@ -203,15 +184,12 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
     }
     FUN = get(FUN)
   }
-  #---------------------------------------------------------------------
   # Test for covariance output
   test <- is.logical(cov)
   if (test==FALSE) {
     stop("argument 'cov' must be logical (TRUE or FALSE)", call. = FALSE)
   }
-  #---------------------------------------------------------------------
   if (groupSummary) by <- object$by
-  #---------------------------------------------------------------------
   if (!groupSummary) {
     test <- !is.null(by) && !(by %in% colnames(object[[1]]))
     if (test) {
@@ -222,7 +200,6 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
       stop("function FUN must return a single value (scalar)")
     }
   }
-  #---------------------------------------------------------------------
   nC <- ncol(object[[1]]) ## number of columns
   nP <- object$info$nP    ## number of paths
   nCov <- 0               ## number of covariances
@@ -231,7 +208,6 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
   lT <- object$info$lT    ## names  of traits
   ret <- vector(mode="list", length=nT+1)
   names(ret) <- c(lT, "info")
-  #---------------------------------------------------------------------
   ## Subset
   if (!is.null(subset)) {
     object[1:nT] <- lapply(object[1:nT], FUN=function(z) z[subset, ])
@@ -240,9 +216,8 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
   ret$info <- list(path=object$info$path, nP=nP, nCov=nCov, lP=lP,
                    nT=nT, lT=lT, by=by, warn=object$info$warn,
                    labelSum=labelSum)
-  #---------------------------------------------------------------------
+  
   ## --- Compute ---
-  #---------------------------------------------------------------------
   z <- ifelse (groupSummary, 1, 2)
   for(i in 1:nT) { ## for each trait
      ## Setup
@@ -308,7 +283,7 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
         tmpM <- cbind(rowSums(tmpM), tmpM)
         tmpM <- tmpM / tmpN[, 2]
       }
-      #-----------------------------------------------------------------
+
       ## Add nice column names
       colnames(tmpN) <- c(by, "N")
       count <- seq(1,length(paths))[-1]
@@ -326,11 +301,9 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
         }
       }
       colnames(tmpM)[z:ncol(tmpM)] <- paths
-      #-----------------------------------------------------------------
       ## Combine FUN and number of records
       tmp <- cbind(tmpN, tmpM[, z:ncol(tmpM)])
-      #-----------------------------------------------------------------
-    }else {
+    } else {
       ## Summarize non-variance partitioning
       if (!groupSummary) {
         if (is.null(by)) {
@@ -353,35 +326,26 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
         tmpM <- cbind(rowSums(tmpM), tmpM)
         tmpM <- tmpM / tmpN[, 2]
       }
-      #-----------------------------------------------------------------
       ## Add nice column names
       colnames(tmpN) <- c(by, "N")
       colnames(tmpM)[z:ncol(tmpM)] <- paths
-      #-----------------------------------------------------------------
       ## Combine FUN and number of records
       tmp <- cbind(tmpN, tmpM[, z:ncol(tmpM)])
-      #-----------------------------------------------------------------
     }
     ## Store
     ret[[i]] <- tmp
   }
-  #---------------------------------------------------------------------
   ## --- Update when var ---
-  #---------------------------------------------------------------------
   if (identical(deparse(FUN),deparse(var))) {
     ret$info$nCov <- kcount-ret$info$nP-1 # number of covariances
     ret$info$lP <- paths[-1] ## names of paths
   }
-  #---------------------------------------------------------------------
+
   ## --- Return ---
-  #---------------------------------------------------------------------
   class(ret) <- c("summaryAlphaPart", class(ret))
   ret
 }
 
-#=======================================================================
-# Plot
-# =======================================================================
 #' @title A function to plot summary of partitioned breeding values.
 #' @rdname plot.summaryAlphaPart
 #' @method plot summaryAlphaPart
@@ -467,9 +431,7 @@ plot.summaryAlphaPart <-
             ...
             )
   {
-    #-------------------------------------------------------------------
     ## --- Setup ---
-    #-------------------------------------------------------------------
     if (!inherits(x, "summaryAlphaPart")) stop("'x' must be of a summaryAlphaPart class")
 
     by    <- x$info$by
@@ -519,7 +481,6 @@ plot.summaryAlphaPart <-
                  "#FCCDE5", "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F")
     color <- color[color != "#FFFF33"] ## remove yellow color(s)
     }
-    #-------------------------------------------------------------------
     ## Line type
     if (is.null(lineTypeList)) {
       if (length(lineType) < nP) {
@@ -528,9 +489,7 @@ plot.summaryAlphaPart <-
         lineType <- c(1, lineType)
       }
   }
-    #-------------------------------------------------------------------
     ## --- Create plots ---
-    #-------------------------------------------------------------------
     ## Ylim
     ylimT <- ylim
 
@@ -578,17 +537,14 @@ plot.summaryAlphaPart <-
     } else {
       tmp$path <- factor(tmp$path, levels=c(x$info$labelSum, sortValue))
     }
-      #-----------------------------------------------------------------
       ## Prepare plot
       #trait in "" since it is not defined
-      #-----------------------------------------------------------------
     trait <- tmp$trait
       p <- qplot(x=by, y=trait, group=path, data=tmp, color=path,
                  linetype=path, geom="line")
       p <- p + geom_line(size=lineSize)
       p <- p + xlab(label=ifelse(is.null(xlab), by,    xlab))
-      p <- p + ylab(label=ifelse(is.null(ylab), lT[i], ylab[i])) #lT[i] is the TRAIT!!!
-      #-----------------------------------------------------------------
+      p <- p + ylab(label=ifelse(is.null(ylab), lT[i], ylab[i])) # lT[i] is the TRAIT!!!
       if (!is.null(xlim)) {
         if (is.list(xlim)) {
           xlimI <- xlim[[i]]
@@ -597,7 +553,7 @@ plot.summaryAlphaPart <-
       }
         p <- p + scale_x_continuous(limits=xlimI)
       }
-      #-----------------------------------------------------------------
+
       if (!is.null(ylimT)) {
         if (is.list(ylimT)) {
           ylimI <- ylimT[[i]]
@@ -606,12 +562,10 @@ plot.summaryAlphaPart <-
         }
         p <- p + scale_y_continuous(limits=ylimI)
       }
-      #-----------------------------------------------------------------
+
       if (useDirectLabels) p <- directlabels::direct.label(p=p,
                                                            method=method)
-      #-----------------------------------------------------------------
       ## This needs to follow direct.label
-      #-----------------------------------------------------------------
       p <- p + scale_colour_manual(values=colorI,
                                    name=ifelse(is.null(labelPath), path,
                                                labelPath))
@@ -621,16 +575,12 @@ plot.summaryAlphaPart <-
       ret[[i]] <- p
      
     }
-    #-------------------------------------------------------------------
+    
     ## --- Return ---
-    #-------------------------------------------------------------------
+
     class(ret) <- c("plotSummaryAlphaPart", class(ret))
     ret
   }
-
-#=======================================================================
-# save
-# ======================================================================
 
 #' @title Save plot method for \code{AlphaPart}
 #' @return Beside the side effect of saving plots to disk, filenames are printed on
@@ -708,9 +658,8 @@ savePlot.plotSummaryAlphaPart <- function(
     dev.off()
    
   }
-  #---------------------------------------------------------------------
+
   ## --- Return ---
-  #---------------------------------------------------------------------
   invisible(ret)
 }
 
@@ -718,7 +667,6 @@ savePlot.plotSummaryAlphaPart <- function(
 #' @method savePlot default
 #' @aliases savePlot.default
 #' @export
-
 savePlot.default <- function(...) {
 
   ##seealso<< \code{\link[grDevices]{savePlot}} help page on the default
@@ -728,132 +676,4 @@ savePlot.default <- function(...) {
 
   ##value<< See \code{\link[grDevices]{savePlot}} for details.
 
-}
-
-#=======================================================================
-# center base population
-#=======================================================================
-#' @title Calculate parent average for base population.
-#' @description This is an internally called functions used to calculate 
-#' parent average for base population.
-#' 
-#' @usage NULL
-#' 
-#' @seealso
-#' \code{\link[AlphaPart]{AlphaPart}}
-#'
-#' @author Thiago de Paula Oliveira
-#' 
-#' @importFrom stats lm confint
-#' @export
-
-centerPop <- function(y, colBV, path){
-  #---------------------------------------------------------------------
-  # Selecting founders and missing pedigree animals
-  #---------------------------------------------------------------------
-  colBV <- (ncol(y)-length(colBV)+1):ncol(y)
-  if(length(colBV)==1){
-    tmp <- as.matrix(y[c(y[, 2]==0 & y[,3]==0), colBV])
-  }else{
-    tmp <- y[c(y[, 2]==0 & y[,3]==0), colBV]
-  }
-  baseMean <- colMeans(tmp, na.rm = TRUE)
-  #---------------------------------------------------------------------
-  # Decision criteria
-  #---------------------------------------------------------------------
-  basePop <- apply(y[,c(2,3)]==0,1,all)
-  for (i in seq_len(ncol(tmp))){
-    if(all(confint(lm(tmp[,i] ~ 1), level=0.95)>0)){
-      path$ms[-1,i] <- path$ms[-1, i] - basePop * baseMean[i]
-      path$pa[-1, i] <- path$pa[-1, i] + basePop * y[, colBV[i]] -
-        path$ms[-1, i] * basePop
-    }
-  }
-  return(path)
-}
-
-#=======================================================================
-# Scaling EBVs
-#=======================================================================
-#' @title Scale EBVs for objects of the class summaryAlphaPart.
-#' @description   This is an internally called functions used to Scale 
-#' EBVs in respect to base population for objects of the class 
-#' \code{AlphaPart}.
-#' 
-#' @usage NULL
-#' 
-#' @seealso
-#' \code{\link[AlphaPart]{AlphaPart}}
-#'
-#' @author Thiago de Paula Oliveira
-#' @export
-sEBV <- function(y, center, scale, recode, unknown){
-  id. <- 1
-  fid. <- 2
-  mid. <- 3
-  if (recode) {
-    y[,id.:mid.] <- cbind(id=seq_len(nrow(y)),
-                     fid=match(y[, fid.], y[, id.], nomatch=0),
-                     mid=match(y[, mid.], y[, id.], nomatch=0))
-  } else {
-    ## Make sure we have 0 when recoded data is provided
-    if (is.na(unknown)) {
-      y[, c(fid., mid.)] <- NAToUnknown(x=y[, c(fid., mid.)], unknown=0)
-    } else {
-      if (unknown != 0)  {
-        y[, c(fid., mid.)] <-
-          NAToUnknown(x=unknownToNA(x=y[, c(fid., mid.)],
-                                    unknown=unknown), unknown=0)
-      }
-    }
-  }
-  #---------------------------------------------------------------------
-  # Selecting founders and missing pedigree animals
-  #---------------------------------------------------------------------
-  if(ncol(y)==(mid.+1)){
-    tmp <- as.matrix(y[c(y[, fid.]==0 & y[, mid.]==0), -c(id.:mid.)])
-    y <- as.matrix(y[, -c(id.:mid.)])    
-  }else{
-    tmp <- y[c(y[, fid.]==0 & y[, mid.]==0), -c(id.:mid.)]
-    y <- y[, -c(id.:mid.)]
-  }
-  #---------------------------------------------------------------------
-  # Centering
-  #---------------------------------------------------------------------
-  if(is.logical(center)){
-    if(center){
-      center <- colMeans(tmp, na.rm = TRUE)
-      y <- y - 
-        rep(center, rep.int(nrow(y), ncol(y)))
-    }
-  }
-  #---------------------------------------------------------------------
-  # Scaling
-  #---------------------------------------------------------------------  
-  if(is.logical(scale)){
-    if(scale) {
-      f <- function(x) {
-        sd(x, na.rm = TRUE)
-      }
-      scale <- apply(tmp, 2L, f)
-      y  <- y / 
-        rep(scale, rep.int(nrow(y), ncol(y)))
-    }
-  }
-  return(y)
-}  
-
-#' @title Get scale information
-#' @description   This is an internally called function 
-#' 
-#' @usage NULL
-#' 
-#' @seealso
-#' \code{\link[AlphaPart]{AlphaPart}}
-#'
-#' @author Thiago de Paula Oliveira
-#' 
-#' @export
-getScale <- function(center = FALSE, scale = FALSE, ...){
-  list(center = center, scale = scale, ...)
 }

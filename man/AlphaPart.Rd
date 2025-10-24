@@ -4,9 +4,11 @@
 \alias{AlphaPart}
 \title{AlphaPart.R}
 \usage{
-AlphaPart(x, pathNA, recode, unknown, sort, verbose, profile,
-  printProfile, pedType, colId, colFid, colMid, colPath, colBV,
-  colBy, center, scaleEBV)
+AlphaPart(x, pathNA=FALSE, recode=TRUE, unknown=NA,
+                      sort=TRUE, verbose=1, profile=FALSE,
+                      printProfile="end", pedType="IPP", colId=1,
+                      colFid=2, colMid=3, colPath=4, colBV=5:ncol(x),
+                      colBy=NULL)
 }
 \arguments{
 \item{x}{data.frame , with (at least) the following columns:
@@ -67,20 +69,6 @@ column(s) holding breeding Values.}
 \item{colBy}{Numeric or character, position or name of a column
 holding group information (see details).}
 
-\item{center}{Logical, if \code{center=TRUE} detect a shift in base
-population mean and attributes it as parent average effect rather
-than Mendelian sampling effect, otherwise, if center=FALSE, the base
-population values are only accounted as Mendelian sampling
-effect. Default is \code{center = TRUE}.}
-
-\item{scaleEBV}{a list with two arguments defining whether is
-appropriate to center and/or scale the \code{colBV} columns in respect to
-the base population. The list may contain the following components:
-\itemize{
-\item \code{center}: a logical value
-\item \code{scale}: a logical value. If \code{center = TRUE} and \code{scale = TRUE} then the
-base population is set to has zero mean and unit variance.
-}}
 }
 \value{
 An object of class \code{AlphaPart}, which can be used in
