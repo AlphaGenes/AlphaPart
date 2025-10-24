@@ -39,12 +39,6 @@
 #' \code{traitsAsDir=TRUE} files are saved as "trait/file_trait_*.csv". File 
 #' names are printed on screen during the process of export and at the end 
 #' invisibly returned.
-#'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#' @importFrom utils write.csv2
-
-
 #' @export
 write.csv  <- function (...) {
   UseMethod("write.csv")

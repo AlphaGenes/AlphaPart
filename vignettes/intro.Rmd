@@ -1,7 +1,5 @@
 ---
-title: "AlphaPart - R implementation of the method for partitioning genetic trends"
-description: >
-  Learn how to get started with the basics of AlphaPart.
+title: "Introduction to AlphaPart"
 author: "Gregor Gorjanc, Jana Obsteter, Thiago de Paula Oliveira"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -19,6 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 ## AlphaPart
+
 AlphaPart is an R package available from CRAN repository at https://CRAN.R-project.org/package=AlphaPart. It consists of the main function AlphaPart for partitioning breeding values and auxiliary functions for manipulating data and summarizing, visualizing, and saving results. The package includes an example dataset AlphaPart.ped, which includes a four-generation pedigree and information about the generation, country, gender, and breeding values. Below we describe and demonstrate the functions with the dataset.
 
 We install and load the package with:

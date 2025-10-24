@@ -1,4 +1,33 @@
-#' @title AlphaPart.R
+#' @useDynLib AlphaPart, .registration = TRUE
+#' @importFrom directlabels direct.label last.qp
+#' @importFrom dplyr group_by do
+#' @import ggplot2
+#' @importFrom grDevices dev.cur dev.off
+#' @importFrom magrittr %>%
+#' @importFrom methods is
+#' @importFrom pedigree orderPed
+#' @importFrom Rcpp sourceCpp
+#' @importFrom reshape melt
+#' @importFrom stats aggregate cov sd var
+#' @importFrom utils head str tai write.csv2
+#' @importFrom tibble is_tibble
+
+#' @description
+#' AlphaPart partitions genetic values and their summaries to
+#' quantify the sources of genetic change in multi-generational pedigrees.
+#' The partitioning method is described in Garcia-Cortes et al. (2008)
+#' <doi:10.1017/S175173110800205X>. The package includes the
+#' main function AlphaPart for partitioning genetic values and auxiliary
+#' functions for manipulating data and summarizing, visualizing, and saving
+#' results.
+#' 
+#' Please see the introductory vignette for instructions for using this package. 
+#' The vignette can be viewed using the following command: 
+#' \code{vignette("intro",package="AlphaPart")}
+#' @keywords internal
+"_PACKAGE"
+
+#' @title AlphaPart
 #'
 #' @description A function to partition breeding values by a path
 #'   variable. The partition method is described in García-Cortés et
@@ -24,7 +53,7 @@
 #' pedigree to provide all available values from genetic
 #' evaluation. Another option is to cut pedigree links - set parents to
 #' unknown and remove them from pedigree prior to using this function -
-#' see \code{\link[AlphaPart]{pedSetBase}} function.  Warning is issued
+#' see \code{\link[AlphaPart]{pedSetBase}} function. Warning is issued
 #' in the case of unknown (missing) values.
 #'
 #' In animal breeding/genetics literature the model with the underlying
@@ -52,7 +81,7 @@
 #'   genetic trend to validate multiple selection decisions. Animal,
 #'   2(6):821-824. \doi{10.1017/S175173110800205X}
 #'
-#' @param x data.frame , with (at least) the following columns:
+#' @param x data.frame, with (at least) the following columns:
 #'   individual, father, and mother identif ication, and year of birth;
 #'   see arguments \code{colId}, \code{colFid}, \code{colMid},
 #'   \code{colPath}, and \code{colBV}; see also details about the
@@ -108,7 +137,6 @@
 #' * `scale`: a logical value. If `center = TRUE` and `scale = TRUE` then the 
 #'  base population is set to has zero mean and unit variance.
 #'
-#' @example inst/examples/examples_AlphaPart.R
 #' @return An object of class \code{AlphaPart}, which can be used in
 #'   further analyses - there is a handy summary method
 #'   (\code{\link[AlphaPart]{summary.AlphaPart}} works on objects of
@@ -121,7 +149,7 @@
 #'   
 #'   * `x` columns from initial data `x` 
 #'   * `trt_pa` parent average 
-#'   * `trt_w`Mendelian sampling term
+#'   * `trt_ms` Mendelian sampling term
 #'   * `trt_path1, trt_path2, ...` breeding value partitions
 #'
 #' The last component of returned object is also a list named
@@ -141,17 +169,9 @@
 #'
 #' If \code{profile=TRUE}, profiling info is printed on screen to spot
 #' any computational bottlenecks.
-#'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#'
-#' @importFrom utils str
-#' @importFrom pedigree orderPed
-#' @importFrom stats aggregate
-#' @importFrom tibble is_tibble
-#'
+#' 
+#' @example inst/examples/examples_AlphaPart.R
 #' @export
-
 AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
                        sort=TRUE, verbose=1, profile=FALSE,
                        printProfile="end", pedType="IPP", colId=1,
@@ -427,8 +447,8 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   } else {
     N <- aggregate(x=y[-1, -c(1:3)], by=list(by=x[, colBy]), FUN=length)
     tmp <- vector(mode="list", length=3)
-    names(tmp) <- c("pa", "w", "xa")
-    tmp$pa <- tmp$w <- matrix(data=0, nrow=nG+1, ncol=nT)
+    names(tmp) <- c("pa", "ms", "xa")
+    tmp$pa <- tmp$ms <- matrix(data=0, nrow=nG+1, ncol=nT)
     tmp$xa <- .Call("AlphaPartDropGroup",
                  c1_=c1, c2_=c2,
                  nI_=nI, nP_=nP, nT_=nT, nG_=nG,
@@ -438,7 +458,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   #---------------------------------------------------------------------
   ## Assign nice column names
   colnames(tmp$pa) <- paste(lT, "_pa", sep="")
-  colnames(tmp$w)  <- paste(lT, "_w", sep="")
+  colnames(tmp$ms) <- paste(lT, "_ms", sep="")
   colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep="_")))
 
   if (profile) {
@@ -454,7 +474,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   ret <- vector(mode="list", length=nT+1)
   t <- 0
   colP <- colnames(tmp$pa)
-  colW <- colnames(tmp$w)
+  colM <- colnames(tmp$ms)
   colX <- colnames(tmp$xa)
   #=====================================================================
   # Original Values 
@@ -466,8 +486,8 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   #=====================================================================
   for (j in 1:nT) { ## j <- 1
     Py <- seq(t+1, t+nP)
-    ret[[j]] <- cbind(tmp$pa[-1, j], tmp$w[-1, j], tmp$xa[-1, Py])
-    colnames(ret[[j]]) <- c(colP[j], colW[j], colX[Py])
+    ret[[j]] <- cbind(tmp$pa[-1, j], tmp$ms[-1, j], tmp$xa[-1, Py])
+    colnames(ret[[j]]) <- c(colP[j], colM[j], colX[Py])
     t <- max(Py)
   }
   tmp <- NULL # not needed anymore

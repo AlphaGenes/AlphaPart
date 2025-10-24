@@ -22,11 +22,7 @@
 #'
 #' @example inst/examples/examples_print.plotSummaryAlphaPart.R
 #'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#'
 #' @export
-
 print.plotSummaryAlphaPart <- function (x, ask=interactive(), ...) {
   k <- 1
   nT <- length(x)
@@ -64,12 +60,7 @@ print.plotSummaryAlphaPart <- function (x, ask=interactive(), ...) {
 #'   moment).
 #'
 #' @example inst/examples/examples_summary.AlphaPart.R
-#'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#'
 #' @export
-
 print.summaryAlphaPart <- function(x, ...) {
   nI <- nrow(x[[1]])
   cat("\n\n Summary of partitions of breeding values \n")
@@ -107,14 +98,7 @@ print.summaryAlphaPart <- function(x, ...) {
 #' @param ...  Arguments passed to \code{print} function.
 #'
 #' @example inst/examples/examples_AlphaPart.R
-#'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#' @importFrom utils head
-#' @importFrom utils tail
-#'
 #' @export
-
 print.AlphaPart <- function (x, n=6, ...) {
   nI <- nrow(x[[1]])
   cat("\n\n Partitions of breeding values \n")
@@ -194,15 +178,7 @@ print.AlphaPart <- function (x, n=6, ...) {
 #'   * `labelSum` column name of summary for "whole/original" breeding values
 #'
 #' There is a handy plot method (\code{\link[AlphaPart]{plot.summaryAlphaPart}}) for output.
-#'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#' @importFrom dplyr group_by do
-#' @importFrom magrittr %>%
-#' @importFrom stats cov var
-#'
 #' @export
-
 summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
                               subset=NULL, sums=FALSE, cov = FALSE,
                               ...) {
@@ -467,17 +443,7 @@ summary.AlphaPart <- function(object, by=NULL, FUN=mean, labelSum="Sum",
 #' @return A list of ggplot objects that can be further modified or
 #'   displayed.  For each trait in \code{x} there is one plot
 #'   visualising summarized values.
-#'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#'
 #' @export
-#' @importFrom directlabels last.qp
-#' @importFrom directlabels direct.label
-#' @importFrom reshape melt
-#' @import ggplot2
-
-
 plot.summaryAlphaPart <-
   function (
             x,
@@ -671,12 +637,7 @@ plot.summaryAlphaPart <-
 #' screen during the process and at the end invisibly returned.
 #' @param ... Arguments passed to \code{type} specific methods, say
 #' \code{width} and \code{height} for \code{type="pdf"} etc.
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#' @importFrom grDevices dev.cur
-#' @importFrom grDevices dev.off
 #' @export
-
 savePlot  <- function (...)    {
     UseMethod("savePlot")
 }
@@ -715,13 +676,7 @@ savePlot  <- function (...)    {
 #'
 #' @return Beside the side effect of saving plots to disk, filenames are printed on
 #' screen during the process and at the end invisibly returned.
-#'
-#' @useDynLib AlphaPart, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-#' @importFrom grDevices dev.cur
-#' @importFrom grDevices dev.off
 #' @export
-
 savePlot.plotSummaryAlphaPart <- function(
   x,                                           ##<< plotSummaryAlphaPart, output object from
                                                ## \code{\link[AlphaPart]{plot.summaryAlphaPart}} function
@@ -789,7 +744,6 @@ savePlot.default <- function(...) {
 #'
 #' @author Thiago de Paula Oliveira
 #' 
-#' @keywords internal
 #' @importFrom stats lm confint
 #' @export
 
@@ -810,9 +764,9 @@ centerPop <- function(y, colBV, path){
   basePop <- apply(y[,c(2,3)]==0,1,all)
   for (i in seq_len(ncol(tmp))){
     if(all(confint(lm(tmp[,i] ~ 1), level=0.95)>0)){
-      path$w[-1,i] <- path$w[-1, i] - basePop * baseMean[i]
+      path$ms[-1,i] <- path$ms[-1, i] - basePop * baseMean[i]
       path$pa[-1, i] <- path$pa[-1, i] + basePop * y[, colBV[i]] -
-        path$w[-1, i] * basePop
+        path$ms[-1, i] * basePop
     }
   }
   return(path)
@@ -832,11 +786,7 @@ centerPop <- function(y, colBV, path){
 #' \code{\link[AlphaPart]{AlphaPart}}
 #'
 #' @author Thiago de Paula Oliveira
-#' 
-#' @keywords internal
-#' @importFrom stats sd
 #' @export
-
 sEBV <- function(y, center, scale, recode, unknown){
   id. <- 1
   fid. <- 2
@@ -903,7 +853,6 @@ sEBV <- function(y, center, scale, recode, unknown){
 #'
 #' @author Thiago de Paula Oliveira
 #' 
-#' @keywords internal
 #' @export
 getScale <- function(center = FALSE, scale = FALSE, ...){
   list(center = center, scale = scale, ...)

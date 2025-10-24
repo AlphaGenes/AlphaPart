@@ -4,7 +4,7 @@
 #include <Rcpp.h>
 
 /*
- * note : RcppExport is an alias to `extern "C"` defined by Rcpp.
+ * NOTE : RcppExport is an alias to `extern "C"` defined by Rcpp.
  *
  * It gives C calling convention to the rcpp_hello_world function so that
  * it can be called from .Call in R. Otherwise, the C++ compiler mangles the

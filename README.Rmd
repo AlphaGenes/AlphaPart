@@ -41,8 +41,15 @@ knitr::opts_chunk$set(
 
 # Overview
 
-A software that implements a method for **partitioning genetic trends** to quantify the sources of genetic gain in breeding programmes. The partitioning method is described in [Garcia-Cortes et al. (2008)](https://doi.org/10.1017/S175173110800205X). The package includes the main function `AlphaPart` for partitioning breeding values and auxiliary functions for manipulating data and summarizing, visualizing, and saving outputs.
-
+AlphaPart partitions genetic values and their summaries
+to quantify the sources of genetic change in multi-generational pedigrees.
+The partitioning method is described in [Garcia-Cortes et al. (2008)] (https://doi.org/10.1017/S175173110800205X).
+TODO: link other references here
+      https://github.com/AlphaGenes/AlphaPart/pull/16
+The package includes the main function `AlphaPart`
+for partitioning genetic values and
+auxiliary functions for manipulating data and summarizing, visualizing, and
+saving results.
 
 # Instalation
 
@@ -53,22 +60,27 @@ install.packages("AlphaPart")
 
 ## Development version
 
-To get a bug fix or to use a feature from the development version, you can install the development version of `AlphaPart` from GitHub.
+To get a bug fix or to use a feature from the development version, you can install the stable new version using:
 
 ```r
 install.packages("devtools")
-devtools::install_github("AlphaGenes/AlphaPart")
+devtools::install_github("AlphaGenes/AlphaPart@main")
 ```
 
-# Contributing to AlphaPart
+or development version using
 
-
-Please, follow the contribution guide at [Contributing file](CONTRIBUTING.md) to know how to start contributing to `AlphaPart`.
+```r
+install.packages("devtools")
+devtools::install_github("AlphaGenes/AlphaPart@devel")
+```
 
 # Usage
 
 ```r
 library(AlphaPart)
+
+# TODO: Consolidate terminology #25
+#       https://github.com/AlphaGenes/AlphaPart/issues/25
 
 ## Partition additive genetic values by country and sex
 AlphaPart.ped$country.gender <- with(AlphaPart.ped, paste(country, gender, sep="-"))
