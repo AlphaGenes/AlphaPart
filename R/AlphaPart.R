@@ -263,7 +263,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   ## Make sure that identifications are numeric if  recode=FALSE
   test <- !sapply(x[, c(colId, colFid, colMid)], is.numeric) & !recode
   if (any(test)) {
-    stop("argument 'recode' must be 'TRUE' when identif ications in 'x' are not numeric")
+    stop("argument 'recode' must be 'TRUE' when identifications in 'x' are not numeric")
   }
   #---------------------------------------------------------------------
   ## Make sure that colBV columns are numeric
@@ -439,7 +439,7 @@ AlphaPart <- function (x, pathNA=FALSE, recode=TRUE, unknown= NA,
   c1 <- c2 <- 0.5
   if (pedType == "IPG") c2 <- 0.25
   #---------------------------------------------------------------------
-  ## Add "zero" row (simplif ies computations with missing parents!)
+  ## Add "zero" row (simplifies computations with missing parents!)
   y <- rbind(y[1, ], y)
   y[1, ] <- 0
   rownames(x) <- NULL
