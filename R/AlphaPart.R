@@ -56,9 +56,6 @@
 #'   restored.
 #' @param verbose Numeric, print additional information: \code{0} -
 #'   print nothing, \code{1} - print some summaries about the data.
-#' @param profile Logical, collect timings and size of objects.
-#' @param printProfile Character, print profile info on the fly
-#'   (\code{"fly"}) or at the end (\code{"end"}).
 #' @param pedType Character, pedigree type: the most common form is
 #'   \code{"IPP"} for Individual, Parent 1 (say father), and Parent 2
 #'   (say mother) data; the second form is \code{"IPG"} for Individual,
@@ -148,15 +145,11 @@
 #' If \code{colBy!=NULL} the resulting object is of a class
 #' \code{summaryAlphaPart}, see
 #' \code{\link[AlphaPart]{summary.AlphaPart}} for details.
-#'
-#' If \code{profile=TRUE}, profiling info is printed on screen to spot
-#' any computational bottlenecks.
 #' 
 #' @example inst/examples/examples_AlphaPart.R
 #' @export
 AlphaPart <- function(x, pathNA=FALSE, recode=TRUE, unknown=NA,
-                      sort=TRUE, verbose=1, profile=FALSE,
-                      printProfile="end", pedType="IPP", colId=1,
+                      sort=TRUE, verbose=1, pedType="IPP", colId=1,
                       colFid=2, colMid=3, colPath=4, colBV=5:ncol(x),
                       colBy=NULL) {
   ## Test if the data is a data.frame
@@ -180,38 +173,6 @@ AlphaPart <- function(x, pathNA=FALSE, recode=TRUE, unknown=NA,
     stop("'pedType' must be either 'IPP' or 'IPG'")
   }
 
-  if (profile) {
-    time0 <- Sys.time()
-    cat("\nStart:", format(time0), "\n")
-    timeRet <- data.frame(task="Start", timeP=time0, time=0, timeCum=0,
-                          memory=0, memoryCum=0,
-                          stringsAsFactors=FALSE)
-    .profilePrint <- function(x, task, printProfile, time, mem, update=
-                                                                  FALSE)
-    {
-      i <- nrow(x)
-      x[i + 1, "task"]        <- task
-      x[i + 1, "timeP"]       <- time
-      x[i + 1, "time"]        <- timeTMP1 <- round(time - x[i, "timeP"], digits=1L)
-      x[i + 1, "timeCum"]     <- timeTMP2 <- round(time - x[1, "timeP"], digits=1L)
-      if (!update) {
-        x[i + 1, "memory"]    <- memTMP1  <- round(mem/1024^2, digits=1L)
-        x[i + 1, "memoryCum"] <- memTMP2  <- round(mem/1024^2, digits=1L) + x[i, "memoryCum"]
-      } else {
-        x[i + 1, "memory"]    <- memTMP1  <- round(mem/1024^2, digits=1L)
-        x[i + 1, "memory"]    <- abs(x[i + 1, "memory"] - x[i, "memory"])
-        x[i + 1, "memoryCum"] <- memTMP2  <- x[i + 1, "memory"] + x[i, "memoryCum"]
-      }
-      if (printProfile == "fly") {
-        cat("\n", task, ":\n", sep="")
-        cat(" - time (this task):",     format(timeTMP1),     "\n")
-        cat(" - time (all tasks):",     format(timeTMP2),     "\n")
-        cat(" - memory (this object):", paste(memTMP1, "Mb"), "\n")
-        cat(" - memory (all objects):", paste(memTMP2, "Mb"), "\n")
-      }
-      x
-    }
-  }
   # -- Test identification
   if(!is.numeric(colId)){
     colId <- which(colnames(x) %in% colId)
@@ -333,11 +294,6 @@ AlphaPart <- function(x, pathNA=FALSE, recode=TRUE, unknown=NA,
     stop("sorting/recoding problem: parent (mother in this case) code must preceede children code - use arguments 'sort' and/or 'recode'")
   }
 
-  if (profile) {
-    timeRet <- .profilePrint(x=timeRet, task="Sort and/or recode pedigree", printProfile=printProfile,
-                             time=Sys.time(), mem=(object.size(x) + object.size(y)))
-  }
-
   ## --- Dimensions and Paths ---
   ## Pedigree size
   nI <- nrow(x)
@@ -394,11 +350,6 @@ AlphaPart <- function(x, pathNA=FALSE, recode=TRUE, unknown=NA,
 
   if (any(nNA > 0)) stop("unknown (missing) values are propagated through the pedigree and therefore not allowed")
   nNA <- NULL # not needed anymore
-  
-  if (profile) {
-    timeRet <- .profilePrint(x=timeRet, task="Dimensions and Matrices P", printProfile=printProfile,
-                             time=Sys.time(), mem=object.size(P))
-  }
 
   ## --- Compute ---
 
@@ -438,12 +389,6 @@ AlphaPart <- function(x, pathNA=FALSE, recode=TRUE, unknown=NA,
   colnames(tmp$ms) <- paste(lT, "_ms", sep="")
   colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep="_")))
 
-  if (profile) {
-    timeRet <- .profilePrint(x=timeRet, task="Computing",
-                             printProfile=printProfile,
-                             time=Sys.time(), mem=object.size(tmp))
-  }
-
   ## --- Massage results ---
 
   ## Put partitions for one trait in one object (-1 is for removal of
@@ -461,12 +406,6 @@ AlphaPart <- function(x, pathNA=FALSE, recode=TRUE, unknown=NA,
     t <- max(Py)
   }
   tmp <- NULL # not needed anymore
-
-  if (profile) {
-    timeRet <- .profilePrint(x=timeRet, task="Massage results",
-                             printProfile=printProfile,
-                             time=Sys.time(), mem=object.size(ret))
-  }
 
   ## Add initial data
 
@@ -493,19 +432,6 @@ AlphaPart <- function(x, pathNA=FALSE, recode=TRUE, unknown=NA,
                       warn=NULL)
   ## names(ret)[nT+1] <- "info"
   names(ret) <- c(lT, "info")
-
-  if (profile) {
-    timeRet <- .profilePrint(x=timeRet, task="Finalizing returned object + adding initial data", printProfile=printProfile,
-                             time=Sys.time(), mem=object.size(ret), update=TRUE)
-  }
-
-  # Profile
-  if (profile){
-    ret$info$profile <- timeRet
-    if (printProfile == "end") {
-      print(timeRet)
-    }
-  }
 
   ## --- Return ---
 

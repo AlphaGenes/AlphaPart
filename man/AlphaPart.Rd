@@ -5,8 +5,7 @@
 \title{AlphaPart.R}
 \usage{
 AlphaPart(x, pathNA=FALSE, recode=TRUE, unknown=NA,
-                      sort=TRUE, verbose=1, profile=FALSE,
-                      printProfile="end", pedType="IPP", colId=1,
+                      sort=TRUE, verbose=1, pedType="IPP", colId=1,
                       colFid=2, colMid=3, colPath=4, colBV=5:ncol(x),
                       colBy=NULL)
 }
@@ -38,11 +37,6 @@ restored.}
 
 \item{verbose}{Numeric, print additional information: \code{0} -
 print nothing, \code{1} - print some summaries about the data.}
-
-\item{profile}{Logical, collect timings and size of objects.}
-
-\item{printProfile}{Character, print profile info on the fly
-(\code{"fly"}) or at the end (\code{"end"}).}
 
 \item{pedType}{Character, pedigree type: the most common form is
 \code{"IPP"} for Individual, Parent 1 (say father), and Parent 2
@@ -103,8 +97,6 @@ If \code{colBy!=NULL} the resulting object is of a class
 \code{summaryAlphaPart}, see
 \code{\link[AlphaPart]{summary.AlphaPart}} for details.
 
-If \code{profile=TRUE}, profiling info is printed on screen to spot
-any computational bottlenecks.
 }
 \description{
 A function to partition breeding values by a path
