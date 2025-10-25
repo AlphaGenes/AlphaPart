@@ -1,44 +1,51 @@
 ---
-title: "Partitioning genetic trends in mean and variance"
-author: "Gregor Gorjanc, Jana Obsteter, Thiago de Paula Oliveira"
+title: "Partitioning genetic values and their trend in mean and variance"
+author: "Thiago de Paula Oliveira and Gregor Gorjanc"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{PartitioningVariance}
+  %\VignetteIndexEntry{Variance}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.height = 6, fig.width = 6)
+knitr::opts_chunk$set(echo = TRUE, fig.height = 10, fig.width = 10)
 ```
 
-In breeding programmes, the observed genetic change is a sum of the contributions of different groups of individuals. Here we show how to partition the genetic mean and variance of breeding values using AlphaPart.
+# Introduction
 
-In addition to the contribution of paths to changes in genetic mean, breeding programmes should also consider analysing changes in genetic variance to understand the drivers of genetic change in a population fully. Managing the change in genetic mean and variance in breeding programmes is essential to ensure long-term genetic gain.
+Observed genetic change sover time in a population are a sum of the contributions of different groups of individuals. Here we show how to partition the genetic values,
+and their trend in mean and variance using `AlphaPart`, which implements the
+partitioning method described in García-Cortés et al. (2008).
+
+We emphasise that while changes in genetic mean (=mean of genetic values) are
+often the main interest, in many cases changes in genetic variance (=variance of
+genetic values) should also be considered. The latter is particularly important
+when selection is intense. How to achieve this was presented in Oliveira et al. (2023).
 
 # Loading packages
+
 ```{r, message=FALSE}
-#=======================================================================
-# Packges
-#=======================================================================
-#devtools::install_github("AlphaGenes/AlphaPart")
+# devtools::install_github("AlphaGenes/AlphaPart")
 library(AlphaPart)
 library(dplyr)
+library(knitr)
 library(ggplot2)
 library(ggridges)
 ```
 
 # Loading datafile
+
+Here we load the example dataset `AlphaPartCattleSim.rds` included in the package.
+The dataset contains a simulated cattle population from Oliveira et al. (2023).
+
 ```{r}
-#=======================================================================
-# Reading and organizing Scenario 1
-#=======================================================================
-data <-  readRDS("./../inst/extdata/AlphaPartCattleSim.rds") %>%
+data <- readRDS("./../inst/extdata/AlphaPartCattleSim.rds") %>%
   dplyr::mutate(across(generation:mother, as.numeric)) %>%
   dplyr::rename(status = type) %>%
   dplyr::mutate(across(c("sex", "status"), as.factor)) %>%
-  dplyr::mutate(path = interaction(sex,status, sep = ":")) %>%
+  dplyr::mutate(path = interaction(sex, status, sep = ":")) %>%
   arrange(generation, ind) %>%
   select(ind, father, mother, sex, status, path, generation, tbv, pheno) %>%
   dplyr::mutate(generation = generation - 20) %>%
@@ -51,17 +58,39 @@ head(data) %>%
 # Data size
 dim(data)
 ```
-* ```ind``` - individual
-* ```father``` and ```mother``` - individual's parents
-* ```sex``` - individual sex
-* ```status``` - if the individual is or not selected
-* ```path``` - the path variable used to partition the additive genetic mean
-* ```tbv``` - true breeding value
-* ```pheno``` - phenotypic value
 
-# Partitioning trends in genetic mean and variance
+The dataset contains the following variables:
 
-We use the `AlphaPart` function to partition the true breeding values `(tbv)` in the `data` by the animal sex and status variable combination into females (F) and males (M) non-selected (N) and males selected (S) contributions:
+  * ```ind``` - individual's ID
+  
+  * ```father``` and ```mother``` - individual's parents
+  
+  * ```sex``` - individual's sex
+  
+  * ```status``` - if the individual was or not selected
+  
+  * ```path``` - the path variable used for partitioning
+  
+  * ```tbv``` - individual's true breeding value
+  
+  * ```pheno``` - individual's phenotypic value
+
+# Partitioning
+
+We use the `AlphaPart` function to partition the true breeding values
+`(tbv)` by the `path` variable, which is a combination of individual's sex and
+status variable:
+
+```{r}
+table(data$path)
+```
+
+As shown above, males are grouped into selected and non-selected because some were
+used as fathers of next generations, but some were not. Femalee are on the other
+hand all in one group. While the group's name is "non-selected", they have all
+been used as mothers of next generations. Hence there was no selection among females,
+and we expect that female group will not contribute to change in genetic mean
+over generations.
 
 ```{r}
 part <- AlphaPart(data, colId = "ind", colFid = "father", 
@@ -70,33 +99,35 @@ head(part$tbv) %>%
   knitr::kable(digits = 2)
 ```
 
-
-We use the generic `summary.AlphaPart` function to summarize an `AlphaPart` object by  generation, con*sering:
-
-* the function **mean**
+We use the generic `summary` function to summarize an `AlphaPart` object by 
+generation. First, we look at the **changes in genetic mean** using `FUN = mean`:
 
 ```{r}
-# Trends in the additve genetic mean
 partMean <- summary(part, by = "generation", FUN = mean)
 
 head(partMean$tbv) %>%
   knitr::kable(digits = 2)
 ```
 
-*  the function **variance**
+Then, we look at the **changes in genetic variance** using `FUN = var`:
+
 ```{r}
-# Trends in the additive genetic variance
 partVar <- summary(part, by = "generation", FUN = var, cov = TRUE)
 
 head(partVar$tbv) %>%
   knitr::kable(digits = 2)
 ```
 
-## Example of plots to analyse the results
+The `cov = TRUE` argument computes covariances between the partitions, which are
+needed if we want to understand how the variances and covariances of the partitions
+add up to the total genetic variance.
 
-Distribution of breeding value partitions by sex and selection status (selected males (M(S)), non-selected males (M(N)), and
-females (F)) over generations.
-```{r, fig.height = 10, fig.width=9}
+# Plotting
+
+It is instructive to plot the distribution of breeding values and their partitions
+over generations. Since we had three paths, we will have three partitions.
+
+```{r}
 part$tbv %>%
   ggplot(aes(y = as.factor(generation), `tbv_F:Non-Selected`)) +
   geom_density_ridges(
@@ -119,7 +150,7 @@ part$tbv %>%
     alpha = .4, point_alpha = 1, rel_min_height = 0.01
   ) +
   ylab("Generation") +
-  xlab("Density plot of breeding value partitions") +
+  xlab("Density plot of breeding values and their partitions") +
   labs(fill = "Path:", linetype = "Path:") +
   theme_bw(base_size = 20) +
   theme(
@@ -127,8 +158,18 @@ part$tbv %>%
   ) 
 ```
 
+The above plot shows how the distribution of breeding values changed over generations
+(pink), and how the three partitions contributed to this change
+(red for "non-selected" females, green for non-selected males, and blue for selected
+males). The non-selected male distribution (green) is always centred around zero, indicating that they don't contribute to the genetic changes. The "non-selected"
+females (red) contribute positively to the genetic change, even though they are
+not selected, however, they contribute through propagating the genetic contributions
+of their selected fathers (e.g., Woolliams, et al. 1999).
 
-Partitions of genetic mean and variance by sex and selection status (selected males (M(S)), non-selected males (M(N)), and females (F)) using true breeding values:
+We can now summarise these distributions by their mean, variance, and covariance.
+The plot of means below shows the overall positive change in genetic mean and
+a clear major contribution to this trend from the selected males, followed by the
+females and no contribution from the non-selected males:
 
 ```{r}
 partMean$tbv %>%
@@ -144,7 +185,7 @@ partMean$tbv %>%
   geom_line(aes(y = `M:Non-Selected`, x = generation,
                 colour = "M(N)"), alpha = 0.8) +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.3) +
-  ylab("Genetic Mean") +
+  ylab("Genetic mean") +
   xlab("Generation") +
   labs(colour = "Path:") +
   theme_bw(base_size = 18) + 
@@ -152,6 +193,21 @@ partMean$tbv %>%
 
 ```
 
+The plot of variances and covariances shown below is more complex due to three lines
+for variances of the each partition and three lines for covariances between the
+partitions. The "sum" is the genetic variance (pink), which is decreasing over
+generations due to intense direction selection in the example (and no simulation
+of de-novo mutation!). This decrease is mainly driven by the small variance of
+the selected males partition (purple). The non-selected males partition has larger
+variance (blue) than the selected males partition. The female partition has the
+largest variance (orange), indicating that in this case females are a reservoir
+of genetic diversity. Note that the non-selected male partition has lower variance
+than the "non-selected" females because this partition of males does not contain
+the selected males partition. If we add up the two male partitions, their variance
+is expected to be similar to the variance of the female partition (because newborn
+males and females will each have about the same amount of genetic variance). Lastly,
+covariances between partitions are mostly hovering around zero in this example.
+When we estimate genetic values from the data, these covariances may be larger.
 
 ```{r}
 partVar$tbv %>%
@@ -170,7 +226,7 @@ partVar$tbv %>%
   geom_line(aes(y = `M:Non-Selected`, x = generation,
             colour = "M(N)"), size =0.5, alpha =0.8) +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.3) +
-  ylab("Genetic Variance") +
+  ylab("Genetic (co)variance") +
   xlab("Generation") +
   labs(colour = "Path: ") +
   theme_bw(base_size = 18) +
@@ -178,3 +234,17 @@ partVar$tbv %>%
     legend.position = "top"
   )
 ```
+
+# References
+
+* García-Cortés et al. (2008) Partition of the genetic trend to validate multiple
+  selection decisions.
+  Animal, 2(6):821-824. https://doi.org/10.1017/S175173110800205X
+
+* Oliveira et al. (2023) A method for partitioning trends in genetic mean and
+  variance to understand breeding practices.
+  Genetics Selection Evolution 55:36. https://doi.org/10.1186/s12711-023-00804-3
+
+* Woolliams et al. (1999) Expected Genetic Contributions and Their Impact on
+  Gene Flow and Genetic Gain.
+  Genetics, 153(2): 1009–1020. https://doi.org/10.1093/genetics/153.2.1009
