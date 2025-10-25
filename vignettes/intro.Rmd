@@ -37,10 +37,14 @@ TODO: link other references here #16
 
 We install and load the package with:
 
-  install.packages("AlphaPart")
-  library("AlphaPart")
+```{r}
+install.packages("AlphaPart")
+library("AlphaPart")
+```
 
 ## Partitioning
+
+TODO NEXT: Polish this
 
 We use the `AlphaPart` function to partition breeding values `(bv1)` in the `AlphaPart.ped` by the country variable into domestic and import contributions:
 
