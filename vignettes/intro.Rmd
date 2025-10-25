@@ -1,29 +1,46 @@
 ---
 title: "Introduction to AlphaPart"
-author: "Gregor Gorjanc, Jana Obsteter, Thiago de Paula Oliveira"
+author: "Gregor Gorjanc, Jana Obsteter, and Thiago de Paula Oliveira"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{AlphaPart}
+  %\VignetteIndexEntry{Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## AlphaPart
+## Introduction
 
-AlphaPart is an R package available from CRAN repository at https://CRAN.R-project.org/package=AlphaPart. It consists of the main function AlphaPart for partitioning breeding values and auxiliary functions for manipulating data and summarizing, visualizing, and saving results. The package includes an example dataset AlphaPart.ped, which includes a four-generation pedigree and information about the generation, country, gender, and breeding values. Below we describe and demonstrate the functions with the dataset.
+`AlphaPart` implements the method for partitioning genetic values from
+García-Cortés et al. (2008). This method enables a retrospective genetic analysis
+of past changes in a population and is as such a counterpart to prospective genetic
+predictions, for example, with the breeder's equation or similar methods.
+The example below shows the theory of the partitioning method.
+See also the `AlphaPart` publication for details (Obšteter et al., 2021).
+Additional vignettes show additional usage of the package:
+partitioning of genetic variance and other functions of genetic values `vignette("variance", package = "AlphaPart")` (Oliveira et al., 2024),
+handling non-zero mean and structure in the founding population `vignette("founders", package = "AlphaPart")` (Craddock et al., 2026),
+partitioning with uncertainty of estimates `vignette("samples", package = "AlphaPart")` (Škorput et al., 2015; Oliveira et al., 2024; Lopez-Carbonell et al., 2024),
+partitioning genotypes `vignette("genotypes", package = "AlphaPart")` (Craddock et al., 2026; Obšteter et al., 2026), and
+partitioning with identity-by-descent information `vignette("ibd", package = "AlphaPart")` (Craddock et al., 2026).
+Referenced on the theoretical and applied work in this domain is briefly summarised
+in TODO.
+
+TODO: link other references here #16
+      https://github.com/AlphaGenes/AlphaPart/pull/16
+
+## Installation
 
 We install and load the package with:
 
-    install.packages(pkg = “AlphaPart”)
-    library(package = "AlphaPart")
+  install.packages("AlphaPart")
+  library("AlphaPart")
+
+## Partitioning
 
 We use the `AlphaPart` function to partition breeding values `(bv1)` in the `AlphaPart.ped` by the country variable into domestic and import contributions:
 
@@ -34,6 +51,8 @@ We use the `AlphaPart` function to partition breeding values `(bv1)` in the `Alp
                     
 The partitioning function `AlphaPart` requires a data frame holding pedigree with animal/sire/dam or animal/sire/maternal-grandsire, a time-ordering variable such as year of birth, partition variable (path), and breeding values. Following the method described in García-Cortés et al. (2008), we recurse the pedigree from the oldest to the youngest individuals, for each individual calculate parent average and Mendelian sampling terms for any number of traits and assign terms to paths. We partition multiple traits by specifying a vector of variables, say colBV = c(“bv1”, “bv2”). The multiple trait option can also serve to partition samples from a posterior distribution to quantify uncertainty (Sorensen et al., 1994; Škorput et al., 2015). To speed-up calculations we use C++ and trait-vectorised partitioning. The function can also directly partition and summarize path contributions “on-the-fly”, which is a useful computational speed-up for huge pedigrees. The output object of the function is either `AlphaPart` or `summaryAlphaPart` class.
 
+## Summarising
+
 We use the generic `summary.AlphaPart` function to summarize an `AlphaPart` object by a grouping variable, say generation `(gen)`:
 
     sumPartByGen <- summary(part, by = “gen”)
@@ -41,8 +60,20 @@ We use the generic `summary.AlphaPart` function to summarize an `AlphaPart` obje
     
 The `summary` function summarizes breeding values and their path partitions by levels of grouping variable. By default, we summarize with a mean, but the user can specify any R function via the FUN argument. The summary function can also summarize only a subset of the object via the subset argument.
 
+## Plotting
+
 We use the generic `plot.summaryAlphaPart` function to plot summarized partitions:
 
     plot(sumPartByGen)
     
 We provide a number of utility functions that ease partitioning analysis. With the `pedFixBirthYear` function we impute missing or fix erroneous years of birth. With the `pedSetBase` function we set the base population by specifying founders and removing older pedigree records. With the `AlphaPartSubset` function we keep partitions for specified paths in the `AlphaPart` or `summaryAlphaPart` objects. With the `AlphaPartSum` function we sum the partitions of several paths in a `summaryAlphaPart` object. The `AlphaPartSubset` and `AlphaPartSum` functions simplify the presentation of partitioning analysis.
+
+## References
+
+* García-Cortés et al. (2008) Partition of the genetic trend to validate multiple
+  selection decisions.
+  Animal, 2(6):821-824. https://doi.org/10.1017/S175173110800205X
+
+* Obšteter et al. (2021) AlphaPart — R implementation of the method for partitioning
+  genetic trends.
+  Genetics Selection Evolution, 53:30. https://doi.org/10.1186/s12711-021-00600-x

@@ -1,7 +1,7 @@
-# References for genetic trend estimation and partitioning method
+# References for genetic value and trend estimation and partitioning method
 
 Here is a list of some:
-* classic references for genetic trend estimation,
+* classic references for genetic value and genetic trend estimation,
 * references for the partitioning method,
 * methodological and software references for the partitioning method, and 
 * some use cases of the partitioning method.
@@ -16,6 +16,12 @@ Please send us any additional references we should list here!
   (One of the first publications on the estimation of genetic values and
   environmental deviations and their trends in mean from data subject to selection,
   laying the foundation for unbiased estimation of genetic change over time.)
+
+* Henderson (1975) Best linear unbiased estimation and prediction under a
+  selection model.
+  Biometrics, 31(2):423–447. https://doi.org/10.2307/2529430
+  (Canonical reference for the development of BLUP methodology for estimating
+  genetic values from phenotypic values and pedigree data.)
 
 * Blair and Pollak (1984) Estimation of Genetic Trend in selected Population with
   and Without the use of Control Population.
@@ -104,6 +110,17 @@ Please send us any additional references we should list here!
   posterior probability of positive (or negative) genetic progress. Provided software
   TM_TRENDS (extension of TM) to estimate breeding values, variance components, and
   partitions in one joint analysis.)
+        
+* TODO: Cite Ros' paper on partitioning with non-zero mean in founders and metafounders #42
+        https://github.com/AlphaGenes/AlphaPart/issues/42
+        (this also touches on using genomic data, but for one locus)
+
+* TODO: Cite Jana's & Thiago's paper on partitioning with genomic information #43
+        https://github.com/AlphaGenes/AlphaPart/issues/43
+        (multiple loci)
+
+* TODO: Cite Ros's paper on partitioning with IBD information #44
+        https://github.com/AlphaGenes/AlphaPart/issues/44
 
 ## Some use cases of the partitioning method
 
@@ -115,7 +132,7 @@ Please send us any additional references we should list here!
   initially increasing and later improving somatic cell score, increasing calving
   to conception, and initially decreasing and later improving longevity.)
 
-* Spehar et al. (2011) Partitioning of Genetic Trends by Origin in Croatian
+* Špehar et al. (2011) Partitioning of Genetic Trends by Origin in Croatian
   Simmental Cattle.
   Agriculturae Conspectus Scientificus, 76(4):301-304. https://hrcak.srce.hr/72103
   (Partitioned genetic trend into local and import contributions for different traits
@@ -133,7 +150,7 @@ Please send us any additional references we should list here!
 
 * See also Škorput et al. (2015) above for application in pig genetic trends.
 
-* Skorput et al. (2018) Partition of genetic trend for daily gain by sex in
+* Škorput et al. (2018) Partition of genetic trend for daily gain by sex in
   Landrace, Large White, Pietrain, and Duroc pigs.
   Journal of Central European Agriculture, 19(3):648-657. https://doi.org/10.5513/JCEA01/19.3.2130
   (Partitioned genetic trends by sex, showing a larger contribution of males.)
@@ -146,7 +163,7 @@ Please send us any additional references we should list here!
   enabled them to indicate when genomic selection has been introduced into a
   breeding programme.)
 
-* Spehar et al. (2022) Partitioning of genetic trends by flock and gender in
+* Špehar et al. (2022) Partitioning of genetic trends by flock and gender in
   Istrian sheep breed.
   Proceedings of 12th WCGALP. 2968-2971. https://doi.org/10.3920/978-90-8686-940-4_720
   (Partitioned genetic trends by sex and flock, showing a larger contribution of
@@ -174,3 +191,18 @@ Please send us any additional references we should list here!
   contribution to genetic gain in the population.)
 
 * See also Lopez-Carbonell et al. (2024) above for application in beef genetic trends.
+
+* TODO: Cite Thiago's paper on plant breeding use case #45
+        https://github.com/AlphaGenes/AlphaPart/issues/45
+
+* TODO: Cite Ros' paper on partitioning with non-zero mean in founders and metafounders #42
+        https://github.com/AlphaGenes/AlphaPart/issues/42
+        (show here what the results show, not what the method is)
+
+* TODO: Cite Jana's & Thiago's paper on partitioning with genomic information #43
+        https://github.com/AlphaGenes/AlphaPart/issues/43
+        (show here what the results show, not what the method is)
+
+* TODO: Cite Ros's paper on partitioning with IBD information #44
+        https://github.com/AlphaGenes/AlphaPart/issues/44
+        (show here what the results show, not what the method is)

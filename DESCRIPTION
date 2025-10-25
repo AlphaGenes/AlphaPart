@@ -5,10 +5,12 @@ Date: 2025-10-24
 Description: AlphaPart partitions genetic values and their summaries to
   quantify the sources of genetic change in multi-generational pedigrees.
   The partitioning method is described in Garcia-Cortes et al. (2008)
-  <doi:10.1017/S175173110800205X>. The package includes the
-  main function AlphaPart for partitioning genetic values and auxiliary
-  functions for manipulating data and summarizing, visualizing, and saving
-  results.
+  <doi:10.1017/S175173110800205X>. This method enables a retrospective genetic
+  analysis of past changes in a population and is as such a counterpart to
+  prospective genetic predictions, for example, with the breeder's equation or
+  similar methods. The package includes the main function AlphaPart for
+  partitioning genetic values and auxiliary functions for manipulating data and
+  summarizing, visualizing, and saving results.
 Authors@R: c(
   person("Gregor", "Gorjanc", role=c("aut", "cre"),
          email = "gregor.gorjanc@gmail.com",
