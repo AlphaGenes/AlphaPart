@@ -4,9 +4,10 @@
 \alias{AlphaPart}
 \title{AlphaPart.R}
 \usage{
-AlphaPart(x, pathNA, recode, unknown, sort, verbose, profile,
-  printProfile, pedType, colId, colFid, colMid, colPath, colBV,
-  colBy, center, scaleEBV)
+AlphaPart(x, pathNA=FALSE, recode=TRUE, unknown=NA,
+                      sort=TRUE, verbose=1, pedType="IPP", colId=1,
+                      colFid=2, colMid=3, colPath=4, colBV=5:ncol(x),
+                      colBy=NULL)
 }
 \arguments{
 \item{x}{data.frame , with (at least) the following columns:
@@ -37,11 +38,6 @@ restored.}
 \item{verbose}{Numeric, print additional information: \code{0} -
 print nothing, \code{1} - print some summaries about the data.}
 
-\item{profile}{Logical, collect timings and size of objects.}
-
-\item{printProfile}{Character, print profile info on the fly
-(\code{"fly"}) or at the end (\code{"end"}).}
-
 \item{pedType}{Character, pedigree type: the most common form is
 \code{"IPP"} for Individual, Parent 1 (say father), and Parent 2
 (say mother) data; the second form is \code{"IPG"} for Individual,
@@ -67,20 +63,6 @@ column(s) holding breeding Values.}
 \item{colBy}{Numeric or character, position or name of a column
 holding group information (see details).}
 
-\item{center}{Logical, if \code{center=TRUE} detect a shift in base
-population mean and attributes it as parent average effect rather
-than Mendelian sampling effect, otherwise, if center=FALSE, the base
-population values are only accounted as Mendelian sampling
-effect. Default is \code{center = TRUE}.}
-
-\item{scaleEBV}{a list with two arguments defining whether is
-appropriate to center and/or scale the \code{colBV} columns in respect to
-the base population. The list may contain the following components:
-\itemize{
-\item \code{center}: a logical value
-\item \code{scale}: a logical value. If \code{center = TRUE} and \code{scale = TRUE} then the
-base population is set to has zero mean and unit variance.
-}}
 }
 \value{
 An object of class \code{AlphaPart}, which can be used in
@@ -115,8 +97,6 @@ If \code{colBy!=NULL} the resulting object is of a class
 \code{summaryAlphaPart}, see
 \code{\link[AlphaPart]{summary.AlphaPart}} for details.
 
-If \code{profile=TRUE}, profiling info is printed on screen to spot
-any computational bottlenecks.
 }
 \description{
 A function to partition breeding values by a path

@@ -1,3 +1,10 @@
+# NEWS
+
+## Changes in version 1.0.0
+
+* Proper handling of metafounders or unknown parent groups with examples shown
+
+* Added the relevant references for the method and listed key publications using the method
 
 ## Changes in version 0.9.6
 

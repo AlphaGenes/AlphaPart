@@ -1,6 +1,7 @@
 \donttest{
 
-## Partition additive genetic values by country
+## Partition genetic values by country
+data(AlphaPart.ped)
 (res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2")))
 
 ## Summarize population by generation (=trend)
@@ -12,7 +13,7 @@ print(p[[1]]$abs)
 print(p[[2]]$abs)
 print(p)
 
-## Partition additive genetic values by country and sex
+## Partition genetic values by country and sex
 AlphaPart.ped$country.gender <- with(AlphaPart.ped, paste(country, gender, sep="-"))
 (res <- AlphaPart(x=AlphaPart.ped, colPath="country.gender", colBV=c("bv1", "bv2")))
 

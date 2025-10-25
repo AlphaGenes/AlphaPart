@@ -45,8 +45,6 @@
 #'
 #' @author Gregor Gorjanc
 #' 
-#' @keywords internal
-#' 
 #' @rdname UnknownFuns
 #' @export
 isUnknown <- function(x, unknown=NA, ...)
@@ -342,7 +340,6 @@ NAToUnknown.data.frame <- function(x, unknown, force=FALSE, call.=FALSE, ...)
 #' @seealso
 #' \code{\link[AlphaPart]{AlphaPart}}
 #' 
-#' @keywords internal
 #' @rdname object.size
 #' @export
 object.size <- function(...)
@@ -496,8 +493,6 @@ c.object_sizes <- function(..., recursive=FALSE)
 #' \code{\link[AlphaPart]{AlphaPart}}
 #'
 #' @author Gregor Gorjanc
-#' 
-#' @keywords internal
 #' 
 #' @rdname mapLevels
 #' @export
@@ -675,7 +670,6 @@ is.listLevelsMap <- function(x)
 
 
 #' @rdname mapLevels
-#' @importFrom methods is
 #' @export
 .isCharacterMap <- function(x)
 {

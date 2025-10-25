@@ -73,6 +73,7 @@ results.
 
 \examples{
 ## Partition additive genetic values
+data(AlphaPart.ped)
 res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2"))
 
 ## Write summary on the disk and collect saved file names

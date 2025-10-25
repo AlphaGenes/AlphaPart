@@ -7,7 +7,7 @@ SEXP AlphaPartDropGroup(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP n
 
   // --- Temp ---
       
-  int i, j, k, t, p;
+  int i, j, t, p;
   
   // --- Inputs ---
       
@@ -24,10 +24,17 @@ SEXP AlphaPartDropGroup(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP n
   
   // --- Outputs ---
       
-  Rcpp::NumericMatrix pa(nI+1, nT);    // parent average
-  Rcpp::NumericMatrix  w(nI+1, nT);    // Mendelian sampling
-  Rcpp::NumericMatrix xa(nI+1, nP*nT); // Parts
-  Rcpp::NumericMatrix xg(nG+1, nP*nT); // Parts for groups
+  Rcpp::NumericMatrix pa(nI+1, nT);    // Parent average
+  Rcpp::NumericMatrix ms(nI+1, nT);    // Mendelian sampling
+  Rcpp::NumericMatrix xa(nI+1, nP*nT); // Partitions
+  Rcpp::NumericMatrix xg(nG+1, nP*nT); // Partitions for groups
+  // NOTE: Rcpp::NumericMatrix is filled by 0s by default
+  
+  // TODO: Maybe we want an algorithm that works on one trait at a time to save on memory?
+  //       https://github.com/AlphaGenes/AlphaPart/issues/15
+  
+  // TODO: Pass pedigree by reference to improve memory use #13
+  //       https://github.com/AlphaGenes/AlphaPart/issues/13
 
   // --- Compute ---
       
@@ -38,13 +45,13 @@ SEXP AlphaPartDropGroup(SEXP c1_, SEXP c2_, SEXP nI_, SEXP nP_, SEXP nT_, SEXP n
                  c2 * ped(ped(i, 2), 3+t);
     
       // Mendelian sampling (MS)
-      w(i, t) = ped(i, 3+t) - pa(i, t);
+      ms(i, t) = ped(i, 3+t) - pa(i, t);
     
       // Parts
 
       // ... for the MS part
       j = Px[t] + P[i];
-      xa(i, j) = w(i, t);
+      xa(i, j) = ms(i, t);
 
       // ... for the PA part
       for(p = 0; p < nP; p++) {
