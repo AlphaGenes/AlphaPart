@@ -24,7 +24,7 @@ Authors@R: c(
            comment = c(ORCID = "0009-0004-1578-1580"))
     )
 Maintainer: Gregor Gorjanc <gregor.gorjanc@gmail.com>
-License: GPL (>= 2)
+License: MIT + file LICENSE
 Depends: R (>= 4.0.0), methods
 Imports:
     directlabels (>= 1.1),
