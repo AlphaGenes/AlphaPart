@@ -22,12 +22,12 @@ AlphaPart(
 }
 \arguments{
 \item{x}{data.frame, with (at least) the following columns:
-individual, father, and mother identif ication, and year of birth;
+individual, father, and mother identification, and year of birth;
 see arguments \code{colId}, \code{colFid}, \code{colMid},
 \code{colPath}, and \code{colBV}; see also details about the
 validity of pedigree.}
 
-\item{pathNA}{Logical, set dummy path (to "XXX") where path
+\item{pathNA}{Logical, set dummy path (to "UNKNOWN") where path
 information is unknown (missing).}
 
 \item{recode}{Logical, internally recode individual, father and,
@@ -55,13 +55,13 @@ Parent 1 (say father), and one of Grandparents of Parent 2 (say
 maternal grandfather).}
 
 \item{colId}{Numeric or character, position or name of a column
-holding individual identif ication.}
+holding individual identification.}
 
 \item{colFid}{Numeric or character, position or name of a column
-holding father identif ication.}
+holding father identification.}
 
 \item{colMid}{Numeric or character, position or name of a column
-holding mother identif ication or maternal grandparent identif
+holding mother identification or maternal grandparent identif
 ication if \code{pedType="IPG"} .}
 
 \item{colPath}{Numeric or character, position or name of a column
