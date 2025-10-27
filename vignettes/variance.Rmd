@@ -24,10 +24,10 @@ We emphasise that while changes in genetic mean (=mean of genetic values) are of
 ```{r, message=FALSE}
 # devtools::install_github("AlphaGenes/AlphaPart")
 library(AlphaPart)
-library(dplyr)
-library(knitr)
-library(ggplot2)
-library(ggridges)
+library(dplyr) # for data munging
+library(knitr) # for nice table displays (knitr::kable)
+library(ggplot2) # for plotting
+library(ggridges) # for plotting
 ```
 
 ## Loading datafile
@@ -109,9 +109,9 @@ The `cov = TRUE` argument computes covariances between the partitions, which are
 Instead of using `FUN = var`, we could use some other method to summarize the partitions, for example, the median as shown below. You should think what this summary means in the context of your data and analysis.
 
 ```{r}
-partVar <- summary(part, by = "generation", FUN = median)
+partMed <- summary(part, by = "generation", FUN = median)
 
-head(partVar$tbv) %>%
+head(partMed$tbv) %>%
   knitr::kable(digits = 2)
 ```
 
@@ -127,17 +127,17 @@ part$tbv %>%
     alpha = .4, point_alpha = 1, rel_min_height = 0.01
   ) +
   geom_density_ridges(
-    aes(y = as.factor(generation), x= `tbv_M:Non-Selected`, fill = "M - Non-Selected",
+    aes(y = as.factor(generation), x = `tbv_M:Non-Selected`, fill = "M - Non-Selected",
         linetype = "M - Non-Selected"),
     alpha = .4, point_alpha = 1, rel_min_height = 0.01
   ) +
   geom_density_ridges(
-    aes(y = as.factor(generation), x= `tbv_M:Selected`, fill = "M - Selected",
+    aes(y = as.factor(generation), x = `tbv_M:Selected`, fill = "M - Selected",
         linetype = "M - Selected"),
     alpha = .4, point_alpha = 1, rel_min_height = 0.01
   ) +
   geom_density_ridges(
-    aes(y = as.factor(generation), x= `tbv`,
+    aes(y = as.factor(generation), x = `tbv`,
         fill = "Sum", linetype = "Sum"),
     alpha = .4, point_alpha = 1, rel_min_height = 0.01
   ) +
@@ -156,8 +156,7 @@ We can now summarise these distributions by their means, variances, and covarian
 
 ```{r}
 partMean$tbv %>%
-  ggplot(aes(y = Sum, x = generation, colour = "Sum"),
-         size = 0.1) +
+  ggplot(aes(y = Sum, x = generation, colour = "Sum")) +
   scale_linetype_manual(
     values = c("solid", "longdash", "dashed", "dotted"))+
   geom_line() +
@@ -173,7 +172,6 @@ partMean$tbv %>%
   labs(colour = "Path:") +
   theme_bw(base_size = 18) + 
   theme(legend.position = "top")
-
 ```
 
 **The plot of variances and covariances** shown below is more complex due to three lines for variances of the each partition and three lines for covariances between the partitions. The "sum" is the genetic variance (pink), which is decreasing over generations due to intense direction selection in the example (and no simulation of de-novo mutation!). This decrease is mainly driven by the small variance of the selected males partition (purple). The non-selected males partition has larger variance (blue) than the selected males partition. The female partition has the largest variance (orange), indicating that in this case females are a reservoir of genetic diversity. Note that the non-selected male partition has lower variance than the "non-selected" females because this partition of males does not contain the selected males partition. If we add up the two male partitions, their variance is expected to be similar to the variance of the female partition (because newborn males and females will each have about the same amount of genetic variance). Lastly, covariances between partitions are mostly hovering around zero in this example. When we estimate genetic values from the data, these covariances may be larger.
@@ -185,15 +183,15 @@ partVar$tbv %>%
   geom_line(aes(y = `F:Non-Selected`, x = generation,
             colour = "F"), alpha = 0.8) +
   geom_line(aes(y = `F:Non-SelectedM:Selected`, x = generation,
-            colour = "F:M(S)"), size =0.5, alpha =0.8) +
+            colour = "F:M(S)"), linewidth = 0.5, alpha = 0.8) +
   geom_line(aes(y = `F:Non-SelectedM:Non-Selected`, x = generation,
-            colour = "F:M(N)"), size =0.5, alpha =0.6) +
+            colour = "F:M(N)"), linewidth = 0.5, alpha = 0.6) +
   geom_line(aes(y = `M:Non-SelectedM:Selected`, x = generation,
-            colour = "M(N):M(S)"), size =0.5, alpha =0.6) +
+            colour = "M(N):M(S)"), size = 0.5, alpha = 0.6) +
   geom_line(aes(y = `M:Selected`, x = generation,
             colour = "M(S)"), alpha = 0.8) +
   geom_line(aes(y = `M:Non-Selected`, x = generation,
-            colour = "M(N)"), size =0.5, alpha =0.8) +
+            colour = "M(N)"), linewidth = 0.5, alpha = 0.8) +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.3) +
   ylab("Genetic (co)variance") +
   xlab("Generation") +

@@ -37,7 +37,7 @@ in [References](references.html).
 We install and load the package with:
 
 ```{r}
-install.packages("AlphaPart")
+# install.packages("AlphaPart") # uncomment if not installed
 library("AlphaPart")
 ```
 
@@ -118,15 +118,16 @@ You can check these equations against the following code:
 
 ```{r}
 # install.packages("pedigreeTools")
-library(pedigreeTools)
-ped <- AlphaPart.ped[, c("id", "father", "mother")]
-ped$father[ped$father == ""] <- NA
-ped$mother[ped$mother == ""] <- NA
-ped[] <- lapply(ped, as.character)
-ped <- pedigree(label = ped$id,
-                sire = ped$father,
-                dam = ped$mother)
-getT(ped)
+if (require(pedigreeTools)) {
+  ped <- AlphaPart.ped[, c("id", "father", "mother")]
+  ped$father[ped$father == ""] <- NA
+  ped$mother[ped$mother == ""] <- NA
+  ped[] <- lapply(ped, as.character)
+  ped <- pedigree(label = ped$id,
+                  sire = ped$father,
+                  dam = ped$mother)
+  getT(ped)
+}
 ```
 
 If we now paint the Mendelian sampling terms according to the country of origin (paths) such that domestic is blue and import is red, we get:
