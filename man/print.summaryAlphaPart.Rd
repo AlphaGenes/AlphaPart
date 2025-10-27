@@ -18,7 +18,7 @@ Print method for objects of the class
 \code{summaryAlphaPart} (result of \code{summary(AlphaPart(...))}).
 }
 \examples{
-## --- Partition additive genetic values by loc ---
+## --- Partition genetic values by loc ---
 data(AlphaPart.ped)
 res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2"))
 
@@ -31,7 +31,7 @@ ret <- summary(res, by="gen")
 ## Summarize population by generation (=trend) but only for domestic location
 ret <- summary(res, by="gen", subset=res[[1]]$country == "domestic")
 
-## --- Partition additive genetic values by loc and sex ---
+## --- Partition genetic values by loc and sex ---
 
 AlphaPart.ped$country.sex <- with(AlphaPart.ped, paste(country, sex, sep="-"))
 res <- AlphaPart(x=AlphaPart.ped, colPath="country.sex", colBV=c("bv1", "bv2"))

@@ -74,7 +74,7 @@ Please send us any additional references we should list here!
 
 * García-Cortés et al. (2006) Multibreed analysis by splitting the breeding values.
   Genetics Selection Evolution, 38(6):601-615. https://doi.org/10.1051/gse:2006024
-  (Developed a quantitative genetics model with additive genetic values that are
+  (Developed a quantitative genetics model with breeding values that are
   split into several independent parts depending on their genetic origin.)
 
 * García-Cortés et al. (2008) Partition of the genetic trend to validate multiple

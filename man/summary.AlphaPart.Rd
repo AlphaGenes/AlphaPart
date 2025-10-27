@@ -18,7 +18,7 @@ for the whole table.}
 \item{FUN}{Function, which function should be used in summary;
 function should return single value per each level of by.}
 
-\item{labelSum}{Character, label used for the overall breeding value.}
+\item{labelSum}{Character, label used for the overall genetic value.}
 
 \item{subset}{Logical, perform summary only on a subset of
 \code{object} subsetted by this argument.}
@@ -38,9 +38,9 @@ moment).}
 }
 \value{
 An object of class \code{summaryAlphaPart}, which is a list
-of data frames with summary statistics on breeding value
+of data frames with summary statistics on genetic value
 partitions. For each trait there a dataframe holds summary for the
-"whole/original" breeding value and its partitions.  In addition
+genetic values and partitions.  In addition
 another list is added (named \code{info}) with the following
 components holdinfg meta info:
 \itemize{
@@ -51,7 +51,7 @@ components holdinfg meta info:
 \item \code{lT} trait labels
 \item \code{by} column name of variable by which summary was performed
 \item \code{warn} potential warning messages associated with this object
-\item \code{labelSum} column name of summary for "whole/original" breeding values
+\item \code{labelSum} column name of summary for genetic values
 }
 
 There is a handy plot method (\code{\link[AlphaPart]{plot.summaryAlphaPart}}) for output.
@@ -60,7 +60,7 @@ There is a handy plot method (\code{\link[AlphaPart]{plot.summaryAlphaPart}}) fo
 Breedng values of individuals are often summarized,
 either by year of birth or some other classification. Function
 \code{summary.AlphaPart} provides a way to ease the computation of
-such summaries on partitions of breeding values.
+such summaries on partitions of genetic values.
 }
 \examples{
 ## --- Partition genetic values by loc ---
@@ -88,7 +88,7 @@ ret <- summary(res, by="gen")
 ret <- summary(res, by="gen", subset=res[[1]]$country == "domestic")
 }
 \seealso{
-\code{\link[AlphaPart]{AlphaPart}} for partitioning breeding
+\code{\link[AlphaPart]{AlphaPart}} for partitioning genetic
 values, \code{\link[AlphaPart]{plot.summaryAlphaPart}} for plotting
 output of summary method
 }

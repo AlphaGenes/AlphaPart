@@ -58,7 +58,7 @@ ication if \code{pedType="IPG"} .}
 holding path information.}
 
 \item{colBV}{Numeric or character, position(s) or name(s) of
-column(s) holding breeding Values.}
+column(s) holding genetic Values.}
 
 \item{colBy}{Numeric or character, position or name of a column
 holding group information (see details).}
@@ -78,7 +78,7 @@ data.frame contains:
 \item \code{x} columns from initial data \code{x}
 \item \code{trt_pa} parent average
 \item \code{trt_w}Mendelian sampling term
-\item \verb{trt_path1, trt_path2, ...} breeding value partitions
+\item \verb{trt_path1, trt_path2, ...} genetic value partitions
 }
 
 The last component of returned object is also a list named
@@ -99,7 +99,7 @@ If \code{colBy!=NULL} the resulting object is of a class
 
 }
 \description{
-A function to partition breeding values by a path
+A function to partition genetic values by a path
 variable. The partition method is described in García-Cortés et
 al., 2008: Partition of the genetic trend to validate multiple
 selection decisions.  Animal : an international journal of animal
@@ -116,14 +116,14 @@ identification is equal to the identification of a father or mother)
 any "code" that is different from existing identifications
 }
 
-Unknown (missing) values for breeding values are propagated down the
+Unknown (missing) values for genetic values are propagated down the
 pedigree to provide all available values from genetic
 evaluation. Another option is to cut pedigree links - set parents to
 unknown and remove them from pedigree prior to using this function -
 see \code{\link[AlphaPart]{pedSetBase}} function.  Warning is issued
 in the case of unknown (missing) values.
 
-In animal breeding/genetics literature the model with the underlying
+In animal breeding literature the model with the underlying
 pedigree type \code{"IPP"} is often called animal model, while the
 model for pedigree type \code{"IPG"} is often called sire - maternal
 grandsire model. With a combination of \code{colFid} and
@@ -138,7 +138,7 @@ steps. However, only means can be obtained, while \code{summary}
 method gives more flexibility.
 }
 \examples{
-## Small pedigree with additive genetic (=breeding) values
+## Small pedigree with genetic values
 ped <- data.frame(  id=c(  1,   2,   3,   4,   5,   6),
                    fid=c(  0,   0,   2,   0,   4,   0),
                    mid=c(  0,   0,   1,   0,   3,   3),
@@ -147,7 +147,7 @@ ped <- data.frame(  id=c(  1,   2,   3,   4,   5,   6),
                   trt1=c(100, 120, 115, 130, 125, 125),
                   trt2=c(100, 110, 105, 100,  85, 110))
 
-## Partition additive genetic values
+## Partition genetic values
 tmp <- AlphaPart(x=ped, colBV=c("trt1", "trt2"))
 print(tmp)
 
@@ -157,14 +157,6 @@ summary(tmp, by="gen")
 ## Summarize by generation (genetic variance)
 summary(tmp, by="gen", FUN = var)
 
-
-\donttest{
-## There are also two demos
-  demo(topic="AlphaPart_deterministic", package="AlphaPart",
-       ask=interactive())
-  demo(topic="AlphaPart_stochastic",     package="AlphaPart",
-       ask=interactive())
-}
 }
 \references{
 Garcia-Cortes, L. A. et al. (2008) Partition of the

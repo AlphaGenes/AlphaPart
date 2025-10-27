@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{plot.summaryAlphaPart}
 \alias{plot.summaryAlphaPart}
-\title{A function to plot summary of partitioned breeding values.}
+\title{A function to plot summary of partitioned genetic values.}
 \usage{
 \method{plot}{summaryAlphaPart}(x, by, sortValue,
   sortValueFUN, sortValueDec, addSum, paths, xlab, ylab, xlim, ylim,
@@ -78,10 +78,10 @@ displayed.  For each trait in \code{x} there is one plot
 visualising summarized values.
 }
 \description{
-A function to plot summary of partitioned breeding values.
+A function to plot summary of partitioned genetic values.
 }
 \details{
-Information in summaries of partitions of breeding values
+Information in summaries of partitions of genetic values
 can be overhelming due to a large volume of numbers. Plot method
 can be used to visualise this data in eye pleasing way using
 ggplot2 graphics.
@@ -102,7 +102,7 @@ print(p[[1]]$abs)
 print(p[[2]]$abs)
 print(p)
 
-## Partition additive genetic values by country and sex
+## Partition genetic values by country and sex
 AlphaPart.ped$country.sex <- with(AlphaPart.ped, paste(country, sex, sep="-"))
 (res <- AlphaPart(x=AlphaPart.ped, colPath="country.sex", colBV=c("bv1", "bv2")))
 

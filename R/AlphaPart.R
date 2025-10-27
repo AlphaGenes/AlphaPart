@@ -71,7 +71,7 @@
 #' @param colPath Numeric or character, position or name of a column
 #'   holding path information.
 #' @param colBV Numeric or character, position(s) or name(s) of
-#'   column(s) holding breeding Values.
+#'   column(s) holding genetic Values.
 #' @param colBy Numeric or character, position or name of a column
 #'   holding group information (see details).
 #'
@@ -84,14 +84,14 @@
 #'   * father and/or mother can be unknown (missing) - defined with
 #'   any "code" that is different from existing identifications
 #'
-#' Unknown (missing) values for breeding values are propagated down the
+#' Unknown (missing) values for genetic values are propagated down the
 #' pedigree to provide all available values from genetic
 #' evaluation. Another option is to cut pedigree links - set parents to
 #' unknown and remove them from pedigree prior to using this function -
 #' see \code{\link[AlphaPart]{pedSetBase}} function. Warning is issued
 #' in the case of unknown (missing) values.
 #'
-#' In animal breeding/genetics literature the model with the underlying
+#' In animal breeding literature the model with the underlying
 #' pedigree type \code{"IPP"} is often called animal model, while the
 #' model for pedigree type \code{"IPG"} is often called sire - maternal
 #' grandsire model. With a combination of \code{colFid} and
@@ -129,7 +129,7 @@
 #'   * `x` columns from initial data `x`
 #'   * `trt_pa` parent average
 #'   * `trt_ms` Mendelian sampling term
-#'   * `trt_path1, trt_path2, ...` breeding value partitions
+#'   * `trt_path1, trt_path2, ...` genetic value partitions
 #'
 #' The last component of returned object is also a list named
 #' \code{info} with the following components holding meta information

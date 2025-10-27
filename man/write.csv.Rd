@@ -37,7 +37,7 @@ It contains:
 \item \code{write.csv} - see \code{\link[utils]{write.csv}} for details.
 \item \code{write.csv.AlphaPart} - for each trait (list component in \code{x}) a file
 is saved on disk with name "AlphaPart_trait.csv", where the file will hold
-original data and breeding value partitions. With \code{traitsAsDir=TRUE}
+original data and genetic value partitions. With \code{traitsAsDir=TRUE}
 files are saved as "trait/file_trait.csv". File names are printed on screen
 during the process of export and at the end invisibly returned.
 \item \code{write.csv.summaryAlphaPart} - for each trait (list component in \code{x})
@@ -48,7 +48,7 @@ invisibly returned.
 }
 }
 \description{
-Save summaries of partitioned breeding values to CSV files on disk for further
+Save summaries of partitioned genetic values to CSV files on disk for further
 analyses of processing with other software or just for saving (backing up)
 results.
 }
@@ -62,17 +62,17 @@ so that one can define \code{write.csv} methods for other objects.
 \itemize{
 \item \code{default}: Default \code{write.csv} method.
 
-\item \code{AlphaPart}: Save partitioned breeding values to CSV files on disk on disk for further
+\item \code{AlphaPart}: Save partitioned genetic values to CSV files on disk on disk for further
 analyses or processing with other software or just for saving (backing up)
 results.
 
-\item \code{summaryAlphaPart}: Save summaries of partitioned breeding values to CSV files on disk for further
+\item \code{summaryAlphaPart}: Save summaries of partitioned genetic values to CSV files on disk for further
 analyses of processing with other software or just for saving (backing up)
 results.
 }}
 
 \examples{
-## Partition additive genetic values
+## Partition genetic values
 data(AlphaPart.ped)
 res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2"))
 
