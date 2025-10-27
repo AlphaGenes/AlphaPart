@@ -52,34 +52,34 @@ print(AlphaPart.ped)
 
 This `data.frame` has information on 8 individuals with these columns:
 
-  * `IId`: individual's ID,
+  * `id`: individual's ID,
   
-  * `FId`: Father's ID,
+  * `father`: Father's ID,
   
-  * `MId`: Mother's ID,
+  * `mother`: Mother's ID,
   
-  * `gen`: Generation,
+  * `generation`: Generation,
   
   * `country`: Country,
   
-  * `gender`: Individual's sex,
+  * `sex`: Individual's sex,
   
-  * `bv1`: Breeding value for trait 1, and
+  * `trait1`: Breeding value for trait 1, and
   
-  * `bv2`: Breeding value for trait 2.
+  * `trait2`: Breeding value for trait 2.
 
 If we would like to partition breeding values for the first trait by country to analyse domestic and import contributions, we would run:
 
 ```{r}
 part <- AlphaPart(x = AlphaPart.ped,
                   colPath = "country",
-                  colBV = "bv1")
+                  colBV = "trait1")
 ```
 
 Inspection of the output object shown below reveals that we computed parent average and Mendelian sampling terms for each individual and then attributed the Mendelian sampling terms to the paths defined by the country variable. As an exercise, you can partition by sex.
 
 ```{r}
-head(part$bv1)
+head(part$trait1)
 ```
 
 ## Theory
@@ -119,13 +119,13 @@ You can check these equations against the following code:
 ```{r}
 # install.packages("pedigreeTools")
 library(pedigreeTools)
-ped <- AlphaPart.ped[, c("IId", "FId", "MId")]
-ped$FId[ped$FId == ""] <- NA
-ped$MId[ped$MId == ""] <- NA
+ped <- AlphaPart.ped[, c("id", "father", "mother")]
+ped$father[ped$father == ""] <- NA
+ped$mother[ped$mother == ""] <- NA
 ped[] <- lapply(ped, as.character)
-ped <- pedigree(label = ped$IId,
-                sire = ped$FId,
-                dam = ped$MId)
+ped <- pedigree(label = ped$id,
+                sire = ped$father,
+                dam = ped$mother)
 getT(ped)
 ```
 
@@ -222,8 +222,8 @@ this topic.
 While the example dataset is small, in real applications pedigrees can be huge. To summarize the results we can use the `summary` function and with the argument `by` we can specify a grouping variable:
 
 ```{r}
-sumPartByGen <- summary(part, by = "gen")
-print(sumPartByGen)
+sumPartByGeneration <- summary(part, by = "generation")
+print(sumPartByGeneration)
 ```
 
 The above results show average breeding value by generation and how this splits into domestic and import contributions. For example, in generation 3 the average is 107 of which ~14 is attributed to domestic and ~94 to import contribution.
@@ -235,14 +235,14 @@ By default, `summary` uses the mean function, but you can specify any R function
 You can plot results from the `summary` function with the `plot` function:
 
 ```{r}
-plot(sumPartByGen)
+plot(sumPartByGeneration)
 ```
 
 This plot is not very illuminating because of the small dataset. There is a more interesting example in the [Variance](variance.html) vignette!
 
 ## Other
 
-You can partition multiple traits by specifying a vector of variables, say `colBV = c("bv1", "bv2")`. This multiple trait option can also serve to partition samples from a posterior distribution to quantify uncertainty - see the [samples](samples.html) vignette.
+You can partition multiple traits by specifying a vector of variables, say `colBV = c("trait1", "trait2")`. This multiple trait option can also serve to partition samples from a posterior distribution to quantify uncertainty - see the [samples](samples.html) vignette.
 
 There is a number of utility functions that ease partitioning analysis. With the `pedFixBirthYear` function you can impute missing or fix erroneous years of birth. With the `pedSetBase` function you can set the base population by specifying founders and removing older pedigree records. With the `AlphaPartSubset` function you keep partitions for specified paths in the `AlphaPart` or `summaryAlphaPart` objects. With the `AlphaPartSum` function you sum the partitions of several paths in a `summaryAlphaPart` object. The `AlphaPartSubset` and `AlphaPartSum` functions simplify the presentation of partitioning analysis.
 

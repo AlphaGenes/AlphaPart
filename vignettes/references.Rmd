@@ -202,7 +202,7 @@ Please send us any additional references we should list here!
   enabled them to indicate when genomic selection has been introduced into a
   breeding programme.)
 
-* Špehar et al. (2022) Partitioning of genetic trends by flock and gender in
+* Špehar et al. (2022) Partitioning of genetic trends by flock and sex in
   Istrian sheep breed.
   Proceedings of 12th WCGALP. 2968-2971. https://doi.org/10.3920/978-90-8686-940-4_720
   (Partitioned genetic trends by sex and flock, showing a larger contribution of
