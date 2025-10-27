@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # AlphaPart <img src="man/figures/logo.png" align="right" height = 150/>
 
 | Package | Status | Coverage | GitHub | Miscellaneous |
@@ -30,7 +28,7 @@ al. (2023)](https://doi.org/10.1186/s12711-023-00804-3). First, we show
 distribution of breeding values and their partitions by selected males,
 non-selected males, and all (=“non-selected”) females by generation.
 
-![](man/figures/AlphaPart_dist.png)<!-- -->
+![](man/figures/AlphaPart_dist.png)
 
 The partitions were obtained by AlphaPart. As you can see, most of
 genetic change is driven by selected males.
@@ -40,9 +38,9 @@ which are shown below. The plots demonstrate again that selected males
 drive most of genetic change in the population - both in increased mean
 and reduced variance.
 
-![](man/figures/AlphaPart_mean.png)<!-- -->
+![](man/figures/AlphaPart_mean.png)
 
-![](man/figures/AlphaPart_var.png)<!-- -->
+![](man/figures/AlphaPart_var.png)
 
 # Instalation
 
