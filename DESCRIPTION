@@ -44,6 +44,6 @@ NeedsCompilation: yes
 Suggests:
   knitr, rmarkdown, testthat, covr,
   pedigreeTools,
-  truncnorm (>= 1.0-5), RColorBrewer (>= 1.0-2), ggridges (>= 0.5.3)
+  RColorBrewer (>= 1.0-2), ggridges (>= 0.5.3)
 VignetteBuilder: knitr
 Encoding: UTF-8
