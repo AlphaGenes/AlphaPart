@@ -24,7 +24,11 @@ Simulation.
 AlphaPart.ped
 }
 \description{
-A dataset containing pedigree information and breeding values
+A dataset containing pedigree information and traits
 for eight individuals.
+}
+\examples{
+data(AlphaPart.ped)
+print(AlphaPart.ped)
 }
 \keyword{datasets}

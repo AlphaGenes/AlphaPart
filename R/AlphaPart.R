@@ -9,7 +9,7 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom reshape melt
 #' @importFrom stats aggregate cov sd var
-#' @importFrom utils head str tai write.csv2
+#' @importFrom utils head str tail write.csv2
 #' @importFrom tibble is_tibble
 
 #' @description

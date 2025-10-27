@@ -2,15 +2,26 @@
 % Please edit documentation in R/AlphaPart.R
 \name{AlphaPart}
 \alias{AlphaPart}
-\title{AlphaPart.R}
+\title{AlphaPart}
 \usage{
-AlphaPart(x, pathNA=FALSE, recode=TRUE, unknown=NA,
-                      sort=TRUE, verbose=1, pedType="IPP", colId=1,
-                      colFid=2, colMid=3, colPath=4, colBV=5:ncol(x),
-                      colBy=NULL)
+AlphaPart(
+  x,
+  pathNA = FALSE,
+  recode = TRUE,
+  unknown = NA,
+  sort = TRUE,
+  verbose = 1,
+  pedType = "IPP",
+  colId = 1,
+  colFid = 2,
+  colMid = 3,
+  colPath = 4,
+  colBV = 5:ncol(x),
+  colBy = NULL
+)
 }
 \arguments{
-\item{x}{data.frame , with (at least) the following columns:
+\item{x}{data.frame, with (at least) the following columns:
 individual, father, and mother identif ication, and year of birth;
 see arguments \code{colId}, \code{colFid}, \code{colMid},
 \code{colPath}, and \code{colBV}; see also details about the
@@ -21,9 +32,8 @@ information is unknown (missing).}
 
 \item{recode}{Logical, internally recode individual, father and,
 mother identification to \code{1:n} codes, while missing parents
-are defined with \code{0}; this option must be used if identif
-ications in \code{x} are not already given as \code{1:n} codes, see
-also argument \code{sort}.}
+are defined with \code{0}; this option must be used if identifications in
+\code{x} are not already given as \code{1:n} codes, see also \code{sort}.}
 
 \item{unknown}{Value(s) used for representing unknown (missing)
 parent in \code{x}; this options has an effect only when
@@ -62,7 +72,6 @@ column(s) holding genetic Values.}
 
 \item{colBy}{Numeric or character, position or name of a column
 holding group information (see details).}
-
 }
 \value{
 An object of class \code{AlphaPart}, which can be used in
@@ -77,7 +86,7 @@ data.frame contains:
 \itemize{
 \item \code{x} columns from initial data \code{x}
 \item \code{trt_pa} parent average
-\item \code{trt_w}Mendelian sampling term
+\item \code{trt_ms} Mendelian sampling term
 \item \verb{trt_path1, trt_path2, ...} genetic value partitions
 }
 
@@ -96,14 +105,13 @@ about the analysis:
 If \code{colBy!=NULL} the resulting object is of a class
 \code{summaryAlphaPart}, see
 \code{\link[AlphaPart]{summary.AlphaPart}} for details.
-
 }
 \description{
 A function to partition genetic values by a path
 variable. The partition method is described in García-Cortés et
-al., 2008: Partition of the genetic trend to validate multiple
-selection decisions.  Animal : an international journal of animal
-bioscience. DOI:  \doi{10.1017/S175173110800205X}
+al. (2008): Partition of the genetic trend to validate multiple
+selection decisions. Animal: an international journal of animal
+bioscience. DOI: \doi{10.1017/S175173110800205X}
 }
 \details{
 Pedigree in \code{x} must be valid in a sense that there
@@ -120,7 +128,7 @@ Unknown (missing) values for genetic values are propagated down the
 pedigree to provide all available values from genetic
 evaluation. Another option is to cut pedigree links - set parents to
 unknown and remove them from pedigree prior to using this function -
-see \code{\link[AlphaPart]{pedSetBase}} function.  Warning is issued
+see \code{\link[AlphaPart]{pedSetBase}} function. Warning is issued
 in the case of unknown (missing) values.
 
 In animal breeding literature the model with the underlying
@@ -157,6 +165,13 @@ summary(tmp, by="gen")
 ## Summarize by generation (genetic variance)
 summary(tmp, by="gen", FUN = var)
 
+\donttest{
+## There are also two demos
+  demo(topic="AlphaPart_deterministic", package="AlphaPart",
+       ask=interactive())
+  demo(topic="AlphaPart_stochastic",     package="AlphaPart",
+       ask=interactive())
+}
 }
 \references{
 Garcia-Cortes, L. A. et al. (2008) Partition of the

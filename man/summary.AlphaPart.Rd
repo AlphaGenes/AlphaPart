@@ -40,9 +40,9 @@ moment).}
 An object of class \code{summaryAlphaPart}, which is a list
 of data frames with summary statistics on genetic value
 partitions. For each trait there a dataframe holds summary for the
-genetic values and partitions.  In addition
+genetic values and partitions. In addition
 another list is added (named \code{info}) with the following
-components holdinfg meta info:
+components holding meta info:
 \itemize{
 \item \code{path} column name holding path information
 \item \code{nP} number of paths
@@ -63,29 +63,41 @@ either by year of birth or some other classification. Function
 such summaries on partitions of genetic values.
 }
 \examples{
-## --- Partition genetic values by loc ---
-data(AlphaPart.ped)
-res <- AlphaPart(x=AlphaPart.ped, colPath="country", colBV=c("bv1", "bv2"))
+# --- Partition genetic values by loc ---
 
-## Summarize whole population
+data(AlphaPart.ped)
+res <- AlphaPart(
+  x = AlphaPart.ped,
+  colPath = "country",
+  colBV = c("trait1", "trait2")
+)
+
+# Summarize whole population
 ret <- summary(res)
 
-## Summarize population by generation (=trend)
-ret <- summary(res, by="gen")
+# Summarize population by generation (=trend)
+ret <- summary(res, by = "generation")
 
-## Summarize population by generation (=trend) but only for domestic location
-ret <- summary(res, by="gen", subset=res[[1]]$country == "domestic")
+# Summarize population by generation (=trend) but only for domestic location
+ret <- summary(res, by = "generation", subset = res[[1]]$country == "domestic")
 
-## --- Partition genetic values by loc and sex ---
+# --- Partition genetic values by loc and gender ---
 
-AlphaPart.ped$country.sex <- with(AlphaPart.ped, paste(country, sex, sep="-"))
-res <- AlphaPart(x=AlphaPart.ped, colPath="country.sex", colBV=c("bv1", "bv2"))
+AlphaPart.ped$country.gender <- with(
+  AlphaPart.ped,
+  paste(country, gender, sep = "-")
+)
+res <- AlphaPart(
+  x = AlphaPart.ped,
+  colPath = "country.gender",
+  colBV = c("trait1", "trait2")
+)
 
-## Summarize population by generation (=trend)
-ret <- summary(res, by="gen")
+# Summarize population by generation (=trend)
+ret <- summary(res, by = "generation")
 
-## Summarize population by generation (=trend) but only for domestic location
-ret <- summary(res, by="gen", subset=res[[1]]$country == "domestic")
+# Summarize population by generation (=trend) but only for domestic location
+ret <- summary(res, by = "generation", subset = res[[1]]$country == "domestic")
 }
 \seealso{
 \code{\link[AlphaPart]{AlphaPart}} for partitioning genetic
