@@ -80,7 +80,7 @@ Please send us any additional references we should list here!
 * García-Cortés et al. (2008) Partition of the genetic trend to validate multiple
   selection decisions.
   Animal, 2(6):821-824. https://doi.org/10.1017/S175173110800205X
-  (The original publication proposing the partitioning method.)
+  (The original publication of the partitioning method.)
 
 * García-Cortés et al. (2010) Fine decomposition of the inbreeding and the
   coancestry coefficients by using the tabular method.
@@ -133,8 +133,8 @@ Please send us any additional references we should list here!
 * Oliveira et al. (2023) A method for partitioning trends in genetic mean and
   variance to understand breeding practices.
   Genetics Selection Evolution 55:36. https://doi.org/10.1186/s12711-023-00804-3
-  (Extends the partitioning method to use any function in addition to the mean of
-  breeding values, say variance. Provided implementation in the AlphaPart R package.)
+  (Extends the partitioning method to use any function in addition to the mean,
+  say variance. Provided implementation in the AlphaPart R package.)
 
 * Lopez-Carbonell et al. (2024) Multiple Trait Bayesian Analysis of Partitioned
   Genetic Trends Accounting for Uncertainty in Genetic Parameters. An Example With
