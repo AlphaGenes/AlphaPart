@@ -186,6 +186,31 @@ part[["trt1"]]
 partSum <- summary(part, by = "gen")
 plot(partSum, col = c("green", "darkgreen", "red", "blue", "black"))
 ```
+### Including multiple traits with unknown parent groups
+The above examples demonstrates the inclusion of unknown parent groups with a single trait. Yet, AlphaPart allows for multiple traits to be partitioned simultaneously. For clarity, we will demonstrate the inclusion of unknown parent groups with two traits.
+```{r}
+ped$trt2 <- c(NA, NA, 100, 50, 10, 40, 98, 20, 71)
+ped$trt2[ped$id %in% c("UPG1")] <- mean(ped$trt2[ped$id %in% c(1,2)])
+ped$trt2[ped$id %in% c("UPG2")] <- mean(ped$trt2[ped$id %in% c(3,4)])
+ped
+```
+Now we can run through AlphaPart
+
+```{r}
+part <- AlphaPart(x = ped, colId = "id", colFid = "fid", colMid = "mid", colPath = "sex", colBV = c("trt1", "trt2"))
+# Print dataframe of trt2 results (trt1 will be the same as previous example)
+part[["trt2"]]
+# Summarise by generation for plotting
+partSum <- summary(part, by = "gen")
+plot(partSum, col = c("green", "darkgreen", "red", "blue", "black"))
+```
+And if we plot from generation 1 to 3 only.
+```{r}
+partSum[["trt1"]] <- partSum[["trt1"]][partSum[["trt1"]]$gen !=0, ]
+partSum[["trt2"]] <- partSum[["trt2"]][partSum[["trt2"]]$gen !=0, ]
+plot(partSum, col = c("green", "darkgreen", "red", "blue", "black"))
+
+```
 
 ## Non-zero mean in genetic values of founders in complex examples
 
