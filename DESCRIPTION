@@ -43,7 +43,7 @@ LinkingTo: Rcpp
 NeedsCompilation: yes
 Suggests:
   knitr, rmarkdown, testthat, covr,
-  pedigreeTools,
+  pedigreeTools (>= 0.3),
   RColorBrewer (>= 1.0-2), ggridges (>= 0.5.3)
 VignetteBuilder: knitr
 Encoding: UTF-8

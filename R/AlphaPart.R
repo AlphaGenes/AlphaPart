@@ -416,41 +416,36 @@ AlphaPart <- function(
   y <- rbind(y[1, ], y)
   y[1, ] <- 0
   rownames(x) <- NULL
-  P <- c(0, P)
-  if (groupSummary) g <- c(0, g)
+  P <- c(0L, P)
+  if (groupSummary) g <- c(0L, g)
 
   ## Compute
   if (!groupSummary) {
-    tmp <- .Call(
-      "AlphaPartDrop",
-      c1_ = c1,
-      c2_ = c2,
-      nI_ = nI,
-      nP_ = nP,
-      nT_ = nT,
-      y_ = y,
-      P_ = P,
-      Px_ = cumsum(c(0, rep(nP, nT - 1))),
-      PACKAGE = "AlphaPart"
+    tmp <- AlphaPartDrop(
+      c1 = c1,
+      c2 = c2,
+      nI = nI,
+      nP = nP,
+      nT = nT,
+      ped = y,
+      P = as.integer(P),
+      Px = as.integer(cumsum(c(0, rep(nP, nT - 1))))
     )
   } else {
     N <- aggregate(x = y[-1, -c(1:3)], by = list(by = x[, colBy]), FUN = length)
     tmp <- vector(mode = "list", length = 3)
     names(tmp) <- c("pa", "ms", "xa")
     tmp$pa <- tmp$ms <- matrix(data = 0, nrow = nG + 1, ncol = nT)
-    tmp$xa <- .Call(
-      "AlphaPartDropGroup",
-      c1_ = c1,
-      c2_ = c2,
-      nI_ = nI,
-      nP_ = nP,
-      nT_ = nT,
-      nG_ = nG,
-      y_ = y,
-      P_ = P,
-      Px_ = cumsum(c(0, rep(nP, nT - 1))),
-      g_ = g,
-      PACKAGE = "AlphaPart"
+    tmp$xa <- AlphaPartDropGroup(
+      c1 = c1,
+      c2 = c2,
+      nI = nI,
+      nP = nP,
+      nT = nT,
+      nG = nG,
+      ped = y,
+      P = as.integer(P),
+      Px = as.integer(cumsum(c(0, rep(nP, nT - 1))))
     )
   }
 
