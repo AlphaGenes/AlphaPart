@@ -156,7 +156,7 @@ a_V & = \color{red}{\frac{1}{4} r_D} +
         \color{blue}{r_V}
 \end{align*}
 
-Using Mendelian sampling terms from `part$bv1` we can calculate the partitions and show how they add up to the breeding values as follows:
+Using Mendelian sampling terms from `part$trait1` we can calculate the partitions and show how they add up to the breeding values as follows:
 
 \begin{align*}
 a_A & = 0 + \color{blue}{r_A} \\
