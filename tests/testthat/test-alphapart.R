@@ -33,30 +33,41 @@ test_that("Test input for AlphaPart ped", {
   ped2$fid <- as.character(ped2$fid)
   ped2[is.na(ped2$fid), "fid"] <- "0"
   ped2$fid <- as.factor(ped2$fid)
+  # TODO: Finish test for unknown argument #53
+  #       https://github.com/AlphaGenes/AlphaPart/issues/53
 
   # ... to test recode argument
   ped3 <- ped[order(orderPed(ped = ped[, c("id", "fid", "mid")])), ]
   ped3$idI <- seq_len(nrow(ped3))
   ped3$fidI <- match(ped3$fid, ped3$id)
   ped3$midI <- match(ped3$mid, ped3$id)
+  # TODO: Finish test for recode argument #54
+  #       https://github.com/AlphaGenes/AlphaPart/issues/54
 
   # ... to test recode and unknown argument
   ped4 <- ped[order(orderPed(ped = ped[, c("id", "fid", "mid")])), ]
   ped4$idI <- seq_len(nrow(ped4))
   ped4$fidI <- match(ped4$fid, ped3$id, nomatch = 99)
   ped4$midI <- match(ped4$mid, ped3$id, nomatch = 99)
+  expect_error(AlphaPart(
+    x = ped4[, c("idI", "fidI", "midI", "pat", "trt1")],
+    pathNA = TRUE,
+    recode = FALSE,
+    verbose = 0
+  ))
+  # TODO: Finish test for unknown argument #53
+  #       https://github.com/AlphaGenes/AlphaPart/issues/53
+  #       The above should throw an error, but maybe we need to rip out
+  #       all the unknown handling and just stick with NA
+  #       for all the unknowns!!!!
 
-  # .. to test that colBV columns are not numeric
-  ped5 <- ped
-  ped5$trt1 <- as.character(ped5$trt1)
-
-  # --- Run ---
-
-  # Error when path column contains NA
-  expect_error(
-    AlphaPart(x = ped[, c("id", "fid", "mid", "pat", "trt1", "trt2")]),
-    regexp = "unknown (missing) value for path not allowed; use 'pathNA=TRUE'"
-  )
+  expect_no_error(AlphaPart(
+    x = ped4[, c("idI", "fidI", "midI", "pat", "trt1")],
+    pathNA = TRUE,
+    recode = FALSE,
+    unknown = 99,
+    verbose = 0
+  ))
 
   # Error if recode=FALSE and input is not numeric
   expect_error(AlphaPart(
@@ -66,15 +77,27 @@ test_that("Test input for AlphaPart ped", {
     verbose = 0
   ))
 
-  # Error if colBV columns are not numeric
+  # Path column must not contain unknown/NA values
   expect_error(AlphaPart(
-    x = ped[, c("id", "fid", "mid", "pat", "trt1", "trt2")],
+    x = ped5[, c("id", "fid", "mid", "pat", "trt1")],
+    verbose = 0
+  ))
+  tmp <- AlphaPart(
+    x = ped[, c("id", "fid", "mid", "pat", "trt1")],
     pathNA = TRUE,
-    recode = FALSE,
+    verbose = 0
+  )
+  expect_true("UNKNOWN" %in% tmp$info$lP)
+
+  # colBV columns must be numeric
+  ped5 <- ped
+  ped5$trt1 <- as.character(ped5$trt1)
+  expect_error(AlphaPart(
+    x = ped5[, c("id", "fid", "mid", "pat", "trt1")],
     verbose = 0
   ))
 
-  # Error if NAs are present
+  # Error if NAs are present in the trait
   pedX <- ped
   pedX[1, "trt1"] <- NA
   expect_error(AlphaPart(
@@ -191,8 +214,7 @@ test_that("Test the output of AlphaPart function", {
     colFid = "fidI",
     colMid = "midI",
     colPath = "pat",
-    colBV = c("trt1", "trt2"),
-    scaleEBV = list(center = TRUE, scale = TRUE)
+    colBV = c("trt1", "trt2")
   )
 
   ret6 <- AlphaPart(
@@ -215,8 +237,7 @@ test_that("Test the output of AlphaPart function", {
     colMid = "midI",
     colPath = "pat",
     colBV = c("trt1", "trt2"),
-    recode = FALSE,
-    scaleEBV = list(center = TRUE, scale = TRUE)
+    recode = FALSE
   )
 
   # ... to test recode and unknown argument
@@ -242,8 +263,7 @@ test_that("Test the output of AlphaPart function", {
     colPath = "pat",
     colBV = c("trt1", "trt2"),
     recode = FALSE,
-    unknown = 99,
-    scaleEBV = list(center = TRUE, scale = TRUE)
+    unknown = 99
   )
 
   ret8 <- AlphaPart(
@@ -256,8 +276,7 @@ test_that("Test the output of AlphaPart function", {
     colPath = "pat",
     colBV = "trt1",
     recode = FALSE,
-    unknown = 99,
-    scaleEBV = list(center = TRUE, scale = TRUE)
+    unknown = 99
   )
   ret8.1 <- AlphaPart(
     x = ped3,
@@ -269,8 +288,7 @@ test_that("Test the output of AlphaPart function", {
     colPath = "pat",
     colBV = 7,
     recode = FALSE,
-    unknown = 99,
-    scaleEBV = list(center = TRUE, scale = TRUE)
+    unknown = 99
   )
 
   # --- Overall result ---
@@ -300,7 +318,7 @@ test_that("Test the output of AlphaPart function", {
 
   expect_equal(as.character(ret$info$path), "pat", ignore_attr = FALSE)
   expect_equal(ret$info$nP, 4)
-  expect_equal(ret$info$lP, c("A", "B", "C", "XXX"))
+  expect_equal(ret$info$lP, c("A", "B", "C", "UNKNOWN"))
   expect_equal(ret$info$nT, 2)
   expect_equal(ret$info$lT, c("trt1", "trt2"))
 
@@ -320,11 +338,11 @@ test_that("Test the output of AlphaPart function", {
       "pat",
       "trt1",
       "trt1_pa",
-      "trt1_w",
+      "trt1_ms",
       "trt1_A",
       "trt1_B",
       "trt1_C",
-      "trt1_XXX"
+      "trt1_UNKNOWN"
     )
   )
 })
@@ -359,8 +377,7 @@ test_that("Test computation", {
   ret <- AlphaPart(
     x = ped[, c("id", "fid", "mid", "pat", "trt1", "trt2")],
     pathNA = TRUE,
-    verbose = 0,
-    center = FALSE
+    verbose = 0
   )
 
   # --- Check computations ---
@@ -452,7 +469,7 @@ test_that("Test computation", {
   # [13,] . 0 0 . . . . . . . 0.5 . 0
 
   # ret$trt1 --> trait 1
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 1   A <NA> <NA>      A  0.56    0.00   0.56   0.56   0.00    0.0    0.000
   # --> base animal from path 1 and all AGV is from path A
   expect_equal(
@@ -461,11 +478,11 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 2   B <NA> <NA>      A  0.04    0.00   0.04   0.04   0.00    0.0    0.000
   # --> ditto
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 3   C <NA> <NA>      B -0.60    0.00  -0.60   0.00  -0.60    0.0    0.000
   # --> ditto for path B
   expect_equal(
@@ -474,7 +491,7 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 4   F    A    B      A  0.47    0.30   0.17   0.47   0.00    0.0    0.000
   # --> ditto for path 1 and both parents are from path A
   expect_equal(
@@ -483,7 +500,7 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 5   G    C    B      A -0.31   -0.28  -0.03  -0.01  -0.30    0.0    0.000
   #
   # id fid mid path
@@ -518,7 +535,7 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 6   J    F    G      A  0.03    0.08  -0.05   0.18  -0.15    0.0    0.000
   #
   # id fid mid path
@@ -548,7 +565,7 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 7   K    F    G      A     0    0.08  -0.08   0.15  -0.15     0        0
   expect_equal(
     as.vector(unlist(ret$trt1[7, -(1:4)])),
@@ -556,7 +573,7 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 8   E    A    B      A  1.00    0.30   0.70   1.00   0.00    0.0    0.000
   # --> reference for test animals, both parents path 1 and animal path 1 = all OK
   expect_equal(
@@ -565,7 +582,7 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 9   D    A    B      B  1.00    0.30   0.70   0.30   0.70    0.0    0.000
   # --> the same parents as for 8, but different partitioning, due to different claimed path - path 2 was doing "selection" of Mendelian sampling!!!
   expect_equal(
@@ -574,7 +591,7 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 10  I    A    B      C  1.00    0.30   0.70   0.30   0.00    0.7    0.000
   # --> ditto
   expect_equal(
@@ -583,16 +600,16 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
-  # 11  H    C    B    XXX  0.10  -0.065  0.165  0.235  -0.30    0.0    0.165
-  # --> argument pathNA=TRUE sets unknown path to dummy path called XXX
+  #    id  fid  mid    path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
+  # 11  H    C    B UNKNOWN  0.10  -0.065  0.165  0.235  -0.30    0.0    0.165
+  # --> argument pathNA=TRUE sets unknown path to dummy path called UNKNOWN
   expect_equal(
     as.vector(unlist(ret$trt1[11, -(1:4)])),
     c(0.1, -0.28, 0.38, 0.02, -0.3, 0, 0.38),
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 12  L    K    H      B  0.50    0.05   0.45  0.085  0.225    0.0     0.19
   expect_equal(
     as.vector(unlist(ret$trt1[12, -(1:4)])),
@@ -600,15 +617,15 @@ test_that("Test computation", {
     ignore_attr = FALSE
   )
 
-  #    id  fid  mid   path  trt1 trt1_pa trt1_w trt1_A trt1_B trt1_C trt1_XXX
+  #    id  fid  mid   path  trt1 trt1_pa trt1_ms trt1_A trt1_B trt1_C trt1_UNKNOWN
   # 13  M   NA    H      B  0.00    0.05  -0.05   0.01  -0.20      0     0.19
   #
-  # id fid mid path
-  #  A   0   0    A 1
-  #  B   0   0    A 2
-  #  C   0   0    B 3
-  #  H   C   B  XXX 11
-  #  M   0   H    B 13
+  # id fid mid    path
+  #  A   0   0       A 1
+  #  B   0   0       A 2
+  #  C   0   0       B 3
+  #  H   C   B UNKNOWN 11
+  #  M   0   H       B 13
   #
   # a_._13 = 1/2(0 + a_11)                   + w_13
   #        = 1/2(0 + 1/2a_3 + 1/2a_2 + w_11) + w_13 --> this corresponds to T[13,]
@@ -632,20 +649,118 @@ test_that("Test computation", {
   )
 })
 
-#test_that("Test profile", {
-#  # Small pedigree with additive genetic (=breeding) values
-#  ped <- data.frame(  id=c(  1,   2,   3,   4,   5,   6),
-#                    fid=c(  0,   0,   2,   0,   4,   0),
-#                    mid=c(  0,   0,   1,   0,   3,   3),
-#                    loc=c("A", "B", "A", "B", "A", "A"),
-#                    gen=c(  1,   1,   2,   2,   3,   3),
-#                    trt1=c(100, 120, 115, 130, 125, 125),
-#                    trt2=c(100, 110, 105, 100,  85, 110))
-#
-#  # Partition additive genetic values
-#  tmp1 <- AlphaPart(x=ped, colBV=c("trt1", "trt2"), profile=TRUE,
-#                   printProfile = "end")
-#  tmp2 <- AlphaPart(x=ped, colBV=c("trt1", "trt2"), profile=TRUE,
-#                    printProfile = "fly")
-#  expect_equal(tmp1$info$profile,  tmp2$info$profile)
-#})
+test_that("Test computation - 2nd example", {
+  # dput(AlphaPart.ped) so we have a fixed dataset
+  dat <- structure(
+    list(
+      id = structure(
+        c(1L, 2L, 3L, 6L, 4L, 5L, 7L, 8L),
+        levels = c("A", "B", "C", "D", "E", "T", "U", "V"),
+        class = "factor"
+      ),
+      father = structure(
+        c(1L, 1L, 2L, 2L, 1L, 3L, 3L, 4L),
+        levels = c("", "B", "D", "E"),
+        class = "factor"
+      ),
+      mother = structure(
+        c(1L, 1L, 2L, 1L, 1L, 3L, 1L, 1L),
+        levels = c("", "A", "C"),
+        class = "factor"
+      ),
+      generation = c(1, 1, 2, 2, 2, 3, 3, 4),
+      country = structure(
+        c(1L, 2L, 1L, 2L, 2L, 1L, 2L, 1L),
+        levels = c("domestic", "import"),
+        class = "factor"
+      ),
+      sex = structure(
+        c(1L, 2L, 1L, 1L, 2L, 2L, 1L, 1L),
+        levels = c("F", "M"),
+        class = "factor"
+      ),
+      trait1 = c(100, 105, 104, 102, 108, 107, 107, 109),
+      trait2 = c(88, 110, 100, 97, 101, 80, 102, 105)
+    ),
+    row.names = c(NA, -8L),
+    class = "data.frame"
+  )
+  part <- AlphaPart(x = dat, colPath = "country", colBV = "trait1", verbose = 0)
+
+  # We worked these out in the intro vignette - domestic is blue and import is red
+  # a_A & = 0 + \color{blue}{r_A} \\
+  #    & = \color{blue}{100} = 100 \\
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "A"] == 100)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "A"] == 0)
+
+  # a_B & = 0 + \color{red}{r_B} \\
+  #     & = \color{red}{105} = 105 \\
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "B"] == 0)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "B"] == 105)
+
+  # a_C & = \color{red}{\frac{1}{2} r_B} +
+  #         \color{blue}{\frac{1}{2} r_A} +
+  #         \color{blue}{r_C} \\
+  #      & = \color{red}{\frac{1}{2} 105} +
+  #          \color{blue}{\frac{1}{2} 100} +
+  #          \color{blue}{1.5} \\
+  #      & = \color{red}{52.5} + \color{blue}{50 + 1.5} \\
+  #      & = \color{red}{52.5} + \color{blue}{51.5} = 104 \\
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "C"] == 51.5)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "C"] == 52.5)
+
+  # a_T & = \color{red}{\frac{1}{2} r_B} +
+  #         \color{red}{r_T} \\
+  #     & = \color{red}{\frac{1}{2} 105} +
+  #         \color{red}{49.5} \\
+  #     & = \color{red}{52.5 + 49.5} \\
+  #     & = \color{red}{102} = 102 \\
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "T"] == 0)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "T"] == 102)
+
+  # a_D & = 0 + \color{red}{r_D} \\
+  #    & = \color{red}{108} = 108 \\
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "D"] == 0)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "D"] == 108)
+
+  # a_E & = \color{red}{\frac{1}{2} r_D} +
+  #         \color{red}{\frac{1}{4} r_B} +
+  #         \color{blue}{\frac{1}{4} r_A} +
+  #         \color{blue}{\frac{1}{2} r_C} +
+  #         \color{blue}{r_E} \\
+  #     & = \color{red}{\frac{1}{2} 108} +
+  #         \color{red}{\frac{1}{4} 105} +
+  #         \color{blue}{\frac{1}{4} 100} +
+  #         \color{blue}{\frac{1}{2} 1.5} +
+  #         \color{blue}{1.0} \\
+  #     & = \color{red}{54 + 26.25} + \color{blue}{25 + 0.75 + 1} \\
+  #     & = \color{red}{80.25} + \color{blue}{26.75} = 107 \\
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "E"] == 26.75)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "E"] == 80.25)
+
+  # a_U & = \color{red}{\frac{1}{2} r_D} +
+  #         \color{red}{r_U} \\
+  #     & = \color{red}{\frac{1}{2} 108} +
+  #         \color{red}{53.0} \\
+  #     & = \color{red}{54 + 53} \\
+  #     & = \color{red}{107} = 107 \\
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "U"] == 0)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "U"] == 107)
+
+  # a_V & = \color{red}{\frac{1}{4} r_D} +
+  #         \color{red}{\frac{1}{8} r_B} +
+  #         \color{blue}{\frac{1}{8} r_A} +
+  #         \color{blue}{\frac{1}{4} r_C} +
+  #         \color{blue}{\frac{1}{2} r_E} +
+  #         \color{blue}{r_V} \\
+  #     & = \color{red}{\frac{1}{4} 108} +
+  #         \color{red}{\frac{1}{8} 105} +
+  #         \color{blue}{\frac{1}{8} 100} +
+  #         \color{blue}{\frac{1}{4} 1.5} +
+  #         \color{blue}{\frac{1}{2} 1.0} +
+  #         \color{blue}{55.5} \\
+  #     & = \color{red}{27 + 13.125} + \color{blue}{12.5 + 0.375 + 0.5 + 55.5} \\
+  #     & = \color{red}{40.125} + \color{blue}{68.875} = 109
+  expect_true(part$trait1$trait1_domestic[part$trait1$id == "V"] == 68.875)
+  expect_true(part$trait1$trait1_import[part$trait1$id == "V"] == 40.125)
+})

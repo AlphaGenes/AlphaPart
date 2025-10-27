@@ -16,14 +16,17 @@
 #' AlphaPart partitions genetic values and their summaries to
 #' quantify the sources of genetic change in multi-generational pedigrees.
 #' The partitioning method is described in Garcia-Cortes et al. (2008)
-#' <doi:10.1017/S175173110800205X>. The package includes the
-#' main function AlphaPart for partitioning genetic values and auxiliary
-#' functions for manipulating data and summarizing, visualizing, and saving
-#' results.
+#' <doi:10.1017/S175173110800205X>. This method enables a retrospective genetic
+#' analysis of past changes in a population and is as such a counterpart to
+#' prospective genetic methods describing genetic change .
+#' The package includes the main function AlphaPart for
+#' partitioning genetic values and auxiliary functions for manipulating data and
+#' summarizing, visualizing, and saving results.
+#' Genetic values can be breeding values, allele dosages, or similar quantities.
 #'
-#' Please see the introductory vignette for instructions for using this package.
+#' See the introductory vignette for instructions on using this package.
 #' The vignette can be viewed using the following command:
-#' \code{vignette("intro",package="AlphaPart")}
+#' \code{vignette("intro", package = "AlphaPart")}
 #' @keywords internal
 "_PACKAGE"
 
@@ -36,11 +39,11 @@
 #'   bioscience. DOI: \doi{10.1017/S175173110800205X}
 #'
 #' @param x data.frame, with (at least) the following columns:
-#'   individual, father, and mother identif ication, and year of birth;
+#'   individual, father, and mother identification, and year of birth;
 #'   see arguments \code{colId}, \code{colFid}, \code{colMid},
 #'   \code{colPath}, and \code{colBV}; see also details about the
 #'   validity of pedigree.
-#' @param pathNA Logical, set dummy path (to "XXX") where path
+#' @param pathNA Logical, set dummy path (to "UNKNOWN") where path
 #'   information is unknown (missing).
 #' @param recode Logical, internally recode individual, father and,
 #'   mother identification to \code{1:n} codes, while missing parents
@@ -62,11 +65,11 @@
 #'   Parent 1 (say father), and one of Grandparents of Parent 2 (say
 #'   maternal grandfather).
 #' @param colId Numeric or character, position or name of a column
-#'   holding individual identif ication.
+#'   holding individual identification.
 #' @param colFid Numeric or character, position or name of a column
-#'   holding father identif ication.
+#'   holding father identification.
 #' @param colMid Numeric or character, position or name of a column
-#'   holding mother identif ication or maternal grandparent identif
+#'   holding mother identification or maternal grandparent identif
 #'   ication if \code{pedType="IPG"} .
 #' @param colPath Numeric or character, position or name of a column
 #'   holding path information.
@@ -240,7 +243,7 @@ AlphaPart <- function(
   test <- !sapply(x[, c(colId, colFid, colMid)], is.numeric) & !recode
   if (any(test)) {
     stop(
-      "argument 'recode' must be 'TRUE' when identif ications in 'x' are not numeric"
+      "argument 'recode' must be 'TRUE' when identifications in 'x' are not numeric"
     )
   }
 
@@ -341,7 +344,7 @@ AlphaPart <- function(
   if (any(test)) {
     if (pathNA) {
       x[, colPath] <- as.character(x[, colPath])
-      x[test, colPath] <- "XXX"
+      x[test, colPath] <- "UNKNOWN"
     } else {
       stop("unknown (missing) value for path not allowed; use 'pathNA=TRUE'")
     }
@@ -359,7 +362,7 @@ AlphaPart <- function(
     if (any(test)) {
       if (pathNA) {
         x[, colBy] <- as.character(x[, colBy])
-        x[test, colBy] <- "XXX"
+        x[test, colBy] <- "UNKNOWN"
       } else {
         stop("unknown (missing) value for group not allowed; use 'pathNA=TRUE'")
       }
