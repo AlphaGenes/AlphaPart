@@ -1,8 +1,20 @@
-# References for genetic value and trend estimation and partitioning method
+---
+title: "AlphaPart: References for genetic value and trend estimation and partitioning method"
+author: "Gregor Gorjanc"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{References}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
-Here is a list of some:
-* classic references for genetic value and genetic trend estimation,
-* references for the partitioning method,
+## Introduction
+
+Below is a list of key references related to:
+* genetic value and genetic trend estimation,
+* the partitioning method and background theory of genetic contributions,
+* the prospective methods of quantitative genetics,
 * methodological and software references for the partitioning method, and 
 * some use cases of the partitioning method.
 
@@ -52,7 +64,7 @@ Please send us any additional references we should list here!
 * TODO: Add key references related to genetic groups, unknonwn parent groups, and metafounders #36
         https://github.com/AlphaGenes/AlphaPart/issues/36
 
-## Classic references for the partitioning method
+## Classic references related to the partitioning method
 
 * Woolliams et al. (1999) Expected Genetic Contributions and Their Impact on
   Gene Flow and Genetic Gain.
@@ -76,6 +88,33 @@ Please send us any additional references we should list here!
   (Developed a simple algorithm to decompose both inbreeding and coancestry
   coefficients by each ancestor, including the founders and the Mendelian sampling
   terms of non-founders.)
+
+* TODO: Should we also cite key reproductive value papers? #47
+        https://github.com/AlphaGenes/AlphaPart/issues/47
+        (I think that Fisher's reproductive value is related to the partitions and genetic contribiutions)
+
+## Classic reference for prospective methods in quantitative genetics
+
+* Lush (1943) Animal Breeding Plans.
+  Iowa State College Press, Ames, Iowa.
+  https://archive.org/details/in.ernet.dli.2015.207427
+  (Univariate breeder's equation describing the expected genetic change in
+  a single trait under selection.)
+
+* Lande (1979) Quantitative genetic analysis of multivariate evolution, applied
+  to brain:body size allometry.
+  Evolution, 33(1):402–416. https://doi.org/10.2307/2407630
+  (Multivariate breeder's equation describing the expected genetic change in
+  multiple traits under selection.)
+  
+* Price (1970) Selection and Covariance.
+  Nature 227, 520–521. https://doi.org/10.1038/227520a0
+  (General equation describing evolutionary change)
+  
+* Price (1972) Fisher's ‘fundamental theorem’ made clear.
+  Annals of Human Genetics, 36:129-140. https://doi.org/10.1111/j.1469-1809.1972.tb00764.x
+  (General equation describing evolutionary change)
+
 
 ## Methodological and software references for the partitioning method
 
@@ -111,15 +150,15 @@ Please send us any additional references we should list here!
   TM_TRENDS (extension of TM) to estimate breeding values, variance components, and
   partitions in one joint analysis.)
         
-* TODO: Cite Ros' paper on partitioning with non-zero mean in founders and metafounders #42
+* TODO: Cite Ros' Craddock paper on partitioning with non-zero mean in founders and metafounders #42
         https://github.com/AlphaGenes/AlphaPart/issues/42
         (this also touches on using genomic data, but for one locus)
 
-* TODO: Cite Jana's & Thiago's paper on partitioning with genomic information #43
+* TODO: Cite Jana's Obsteter & Thiago's paper on partitioning with genomic information #43
         https://github.com/AlphaGenes/AlphaPart/issues/43
         (multiple loci)
 
-* TODO: Cite Ros's paper on partitioning with IBD information #44
+* TODO: Cite Ros's Craddock paper on partitioning with IBD information #44
         https://github.com/AlphaGenes/AlphaPart/issues/44
 
 ## Some use cases of the partitioning method
@@ -195,7 +234,7 @@ Please send us any additional references we should list here!
 * TODO: Cite Thiago's paper on plant breeding use case #45
         https://github.com/AlphaGenes/AlphaPart/issues/45
 
-* TODO: Cite Ros' paper on partitioning with non-zero mean in founders and metafounders #42
+* TODO: Cite Ros' Craddock paper on partitioning with non-zero mean in founders and metafounders #42
         https://github.com/AlphaGenes/AlphaPart/issues/42
         (show here what the results show, not what the method is)
 
@@ -203,6 +242,6 @@ Please send us any additional references we should list here!
         https://github.com/AlphaGenes/AlphaPart/issues/43
         (show here what the results show, not what the method is)
 
-* TODO: Cite Ros's paper on partitioning with IBD information #44
+* TODO: Cite Ros's Craddock paper on partitioning with IBD information #44
         https://github.com/AlphaGenes/AlphaPart/issues/44
         (show here what the results show, not what the method is)

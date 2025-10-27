@@ -15,16 +15,9 @@ knitr::opts_chunk$set(echo = TRUE, fig.height = 10, fig.width = 10)
 
 ## Introduction
 
-Observed genetic change sover time in a population are a sum of the contributions of different groups of individuals. Here we show how to partition the genetic values,
-and their trend in mean and variance using `AlphaPart`, which implements the
-partitioning method described in García-Cortés et al. (2008).
+Observed genetic change sover time in a population are a sum of the contributions of different groups of individuals. Here we show how to partition the genetic values, and their trend in mean and variance using `AlphaPart`, which implements the partitioning method described in García-Cortés et al. (2008).
 
-We emphasise that while changes in genetic mean (=mean of genetic values) are
-often the main interest, in many cases changes in genetic variance (=variance of
-genetic values) should also be considered. The latter is particularly important
-when selection is intense. How to achieve this was presented in Oliveira et al. (2023).
-Importantly, this work shows that a user could use any type of summary method
-to summarise the partitions.
+We emphasise that while changes in genetic mean (=mean of genetic values) are often the main interest, in many cases changes in genetic variance (=variance of genetic values) should also be considered. The latter is particularly important when selection is intense. How to achieve this was presented in Oliveira et al. (2023). Importantly, this work shows that a user could use any type of summary method to summarise the partitions.
 
 ## Loading packages
 
@@ -39,8 +32,7 @@ library(ggridges)
 
 ## Loading datafile
 
-Here we load the example dataset `AlphaPartCattleSim.rds` included in the package.
-The dataset contains a simulated cattle population from Oliveira et al. (2023).
+Here we load the example dataset `AlphaPartCattleSim.rds` included in the package. The dataset contains a simulated cattle population from Oliveira et al. (2023).
 
 ```{r}
 data <- readRDS("./../inst/extdata/AlphaPartCattleSim.rds") %>%
@@ -79,20 +71,13 @@ The dataset contains the following variables:
 
 ## Partitioning
 
-We use the `AlphaPart` function to partition the true breeding values
-`(tbv)` by the `path` variable, which is a combination of individual's sex and
-status variable:
+We use the `AlphaPart` function to partition the true breeding values `(tbv)` by the `path` variable, which is a combination of individual's sex and status variable:
 
 ```{r}
 table(data$path)
 ```
 
-As shown above, males are grouped into selected and non-selected because some were
-used as fathers of next generations, but some were not. Femalee are on the other
-hand all in one group. While the group's name is "non-selected", they have all
-been used as mothers of next generations. Hence there was no selection among females,
-and we expect that female group will not contribute to change in genetic mean
-over generations.
+As shown above, males are grouped into selected and non-selected because some were used as fathers of next generations, but some were not. Femalee are on the other hand all in one group. While the group's name is "non-selected", they have all been used as mothers of next generations. Hence there was no selection among females, and we expect that female group will not contribute to change in genetic mean over generations.
 
 ```{r}
 part <- AlphaPart(data, colId = "ind", colFid = "father", 
@@ -101,8 +86,7 @@ head(part$tbv) %>%
   knitr::kable(digits = 2)
 ```
 
-We use the generic `summary` function to summarize an `AlphaPart` object by 
-generation. First, we look at the **changes in genetic mean** using `FUN = mean`:
+We use the generic `summary` function to summarize an `AlphaPart` object by  generation. First, we look at the **changes in genetic mean** using `FUN = mean`:
 
 ```{r}
 partMean <- summary(part, by = "generation", FUN = mean)
@@ -120,13 +104,9 @@ head(partVar$tbv) %>%
   knitr::kable(digits = 2)
 ```
 
-The `cov = TRUE` argument computes covariances between the partitions, which are
-needed if we want to understand how the variances and covariances of the partitions
-add up to the total genetic variance.
+The `cov = TRUE` argument computes covariances between the partitions, which are needed if we want to understand how the variances and covariances of the partitions add up to the total genetic variance.
 
-Instead of using `FUN = var`, we could use some other method to summarize the
-partitions, for example, the median as shown below. You should think what this
-summary means in the context of your data and analysis.
+Instead of using `FUN = var`, we could use some other method to summarize the partitions, for example, the median as shown below. You should think what this summary means in the context of your data and analysis.
 
 ```{r}
 partVar <- summary(part, by = "generation", FUN = median)
@@ -137,8 +117,7 @@ head(partVar$tbv) %>%
 
 ## Plotting
 
-It is instructive to plot the distribution of breeding values and their partitions
-over generations. Since we had three paths, we will have three partitions.
+It is instructive to plot the distribution of breeding values and their partitions over generations. Since we had three paths, we will have three partitions.
 
 ```{r}
 part$tbv %>%
@@ -171,18 +150,9 @@ part$tbv %>%
   ) 
 ```
 
-The above plot shows how the distribution of breeding values changed over generations
-(pink), and how the three partitions contributed to this change
-(red for "non-selected" females, green for non-selected males, and blue for selected
-males). The non-selected male distribution (green) is always centred around zero, indicating that they don't contribute to the genetic changes. The "non-selected"
-females (red) contribute positively to the genetic change, even though they are
-not selected, however, they contribute through propagating the genetic contributions
-of their selected fathers (e.g., Woolliams, et al. 1999).
+The above plot shows how the distribution of breeding values changed over generations (pink), and how the three partitions contributed to this change (red for "non-selected" females, green for non-selected males, and blue for selected males). The non-selected male distribution (green) is always centred around zero, indicating that they don't contribute to the genetic changes. The "non-selected" females (red) contribute positively to the genetic change, even though they are not selected, however, they contribute through propagating the genetic contributions of their selected fathers (e.g., Woolliams, et al. 1999).
 
-We can now summarise these distributions by their means, variances, and covariances.
-**The plot of means** below shows the overall positive change in genetic mean and
-a clear major contribution to this trend from the selected males, followed by the
-females and no contribution from the non-selected males:
+We can now summarise these distributions by their means, variances, and covariances. **The plot of means** below shows the overall positive change in genetic mean and a clear major contribution to this trend from the selected males, followed by the females and no contribution from the non-selected males:
 
 ```{r}
 partMean$tbv %>%
@@ -206,21 +176,7 @@ partMean$tbv %>%
 
 ```
 
-**The plot of variances and covariances** shown below is more complex due to three lines
-for variances of the each partition and three lines for covariances between the
-partitions. The "sum" is the genetic variance (pink), which is decreasing over
-generations due to intense direction selection in the example (and no simulation
-of de-novo mutation!). This decrease is mainly driven by the small variance of
-the selected males partition (purple). The non-selected males partition has larger
-variance (blue) than the selected males partition. The female partition has the
-largest variance (orange), indicating that in this case females are a reservoir
-of genetic diversity. Note that the non-selected male partition has lower variance
-than the "non-selected" females because this partition of males does not contain
-the selected males partition. If we add up the two male partitions, their variance
-is expected to be similar to the variance of the female partition (because newborn
-males and females will each have about the same amount of genetic variance). Lastly,
-covariances between partitions are mostly hovering around zero in this example.
-When we estimate genetic values from the data, these covariances may be larger.
+**The plot of variances and covariances** shown below is more complex due to three lines for variances of the each partition and three lines for covariances between the partitions. The "sum" is the genetic variance (pink), which is decreasing over generations due to intense direction selection in the example (and no simulation of de-novo mutation!). This decrease is mainly driven by the small variance of the selected males partition (purple). The non-selected males partition has larger variance (blue) than the selected males partition. The female partition has the largest variance (orange), indicating that in this case females are a reservoir of genetic diversity. Note that the non-selected male partition has lower variance than the "non-selected" females because this partition of males does not contain the selected males partition. If we add up the two male partitions, their variance is expected to be similar to the variance of the female partition (because newborn males and females will each have about the same amount of genetic variance). Lastly, covariances between partitions are mostly hovering around zero in this example. When we estimate genetic values from the data, these covariances may be larger.
 
 ```{r}
 partVar$tbv %>%

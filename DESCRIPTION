@@ -7,10 +7,11 @@ Description: AlphaPart partitions genetic values and their summaries to
   The partitioning method is described in Garcia-Cortes et al. (2008)
   <doi:10.1017/S175173110800205X>. This method enables a retrospective genetic
   analysis of past changes in a population and is as such a counterpart to
-  prospective genetic predictions, for example, with the breeder's equation or
-  similar methods. The package includes the main function AlphaPart for
+  prospective genetic methods describing genetic change .
+  The package includes the main function AlphaPart for
   partitioning genetic values and auxiliary functions for manipulating data and
   summarizing, visualizing, and saving results.
+  Genetic values can be breeding values, allele dosages, or similar quantities.
 Authors@R: c(
   person("Gregor", "Gorjanc", role=c("aut", "cre"),
          email = "gregor.gorjanc@gmail.com",
@@ -42,6 +43,7 @@ LinkingTo: Rcpp
 NeedsCompilation: yes
 Suggests:
   knitr, rmarkdown, testthat, covr,
+  pedigreeTools,
   truncnorm (>= 1.0-5), RColorBrewer (>= 1.0-2), ggridges (>= 0.5.3)
 VignetteBuilder: knitr
 Encoding: UTF-8

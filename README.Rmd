@@ -46,13 +46,11 @@ to quantify the sources of genetic change in multi-generational pedigrees.
 The partitioning method is described in [Garcia-Cortes et al. (2008)] (https://doi.org/10.1017/S175173110800205X). 
 This method enables a retrospective genetic analysis
 of past changes in a population and is as such a counterpart to prospective genetic
-predictions, for example, with the breeder's equation or similar methods.
-TODO: link other references here #16
-      https://github.com/AlphaGenes/AlphaPart/pull/16
-The package includes the main function `AlphaPart`
-for partitioning genetic values and
-auxiliary functions for manipulating data and summarizing, visualizing, and
+methods describing genetic change.
+The package includes the main function `AlphaPart` for partitioning genetic values
+and auxiliary functions for manipulating data and summarizing, visualizing, and
 saving results.
+Genetic values can be breeding values, allele dosages, or similar quantities.
 
 # Instalation
 
