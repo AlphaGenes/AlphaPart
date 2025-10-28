@@ -127,5 +127,5 @@ plot(sumPartByGeneration)
   briefly summarised in [References](vignettes/references.Rmd).
   
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/AlphaGenes/AlphaPart/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AlphaGenes/AlphaPart/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
+  [![R-CMD-check](https://github.com/janaobsteter/AlphaPart_package/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janaobsteter/AlphaPart_package/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
