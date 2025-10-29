@@ -283,7 +283,7 @@ partSum <- summary(part, by = "gen")
 plot(partSum, col = c("green", "darkgreen", "red", "blue", "black"))
 ```
 
-If we sum the contributions from `UPG1` and `UPG2`, the results are equivalent to using a single unknown parent group as shown previously.
+If we sum the contributions from `UPG1` and `UPG2`, the results are equivalent to using a single unknown parent group as shown previously. This is not true for all cases, but holds for this since the mean of the two unknown parent groups are equal to the mean of all the founders.
 
 ```{r}
 partCombinedUPG <- partSum
