@@ -124,4 +124,4 @@ plot(sumPartByGeneration)
   `vignette("ibd", package = "AlphaPart")`
 
 - References on the theoretical and applied work in this domain are
-briefly summarised in [References](vignettes/references.Rmd).
+  briefly summarised in [References](vignettes/references.Rmd).
