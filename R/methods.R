@@ -276,11 +276,6 @@ summary.AlphaPart <- function(
     checkCov <- length(cols[-1]) > 1 ## do not run cov if path has 1 level
     paths <- cols
     paths[2:length(paths)] <- ret$info$lP
-    if (object$info$gameticPartition){
-      cols <- c(cols, paste(lT[i], lP, sep="_f_"), paste(lT[i], lP, sep = "_m_")) # Review as not necessarily labelled as such?
-      paths <- cols
-      paths[2:length(paths)] <- paste(ret$info$lP, c(rep("i", nP), rep("f", nP), rep("m", nP)), sep= "_")
-    }
     paths[1] <- labelSum
 
     ## Summarize Variance Partitioning

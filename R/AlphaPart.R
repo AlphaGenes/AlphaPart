@@ -181,9 +181,7 @@ AlphaPart <- function(
     length(colFid) > 1 |
     length(colMid) > 1 |
     length(colPath) > 1 |
-    length(colBy) > 1) |
-    length(colPaternalBV) > 1 |
-    length(colMaternalBV) > 1
+    length(colBy) > 1)
   if (test) {
     stop(
       "arguments 'colId', 'colFid', 'colMid', 'colPath', and 'colBy' must be of length 1"
@@ -531,10 +529,15 @@ AlphaPart <- function(
     colnames(tmp$ms) <- paste(lT, "_ms", sep = "")
     colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep = "_"))) 
   } else {
-    lPT <- colnames(x[, c(colBV, colPaternalBV, colMaternalBV), drop=FALSE])
+    #lPT <- colnames(x[, c(colBV, colPaternalBV, colMaternalBV), drop=FALSE])
+    lP <- c(lP, paste0(lP, "_paternal"), paste0(lP, "_maternal"))
+    lPT <- paste0(
+      rep(lT, each = 3),
+      c("", "_paternal", "_maternal")
+    )
     colnames(tmp$pa) <- paste(lPT, "_pa", sep="")
     colnames(tmp$ms)  <- paste(lPT, "_ms", sep="")
-    colnames(tmp$xa) <- c(t(outer(lPT, lP, paste, sep = "_")))
+    colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep = "_")))
   }
   
 
@@ -557,12 +560,16 @@ AlphaPart <- function(
       t <- max(Py)
     }
   } else {
+    w <- 1
+    t <- 0
     for (j in 1:nT) {
       ## j <- 1
-      Py <- c(j-1+seq(t+1, t+nP), j-1+nT*nP+seq(t+1, t+nP), j-1+2*nT*nP+seq(t+1, t+nP))
-      ret[[j]] <- cbind(tmp$pa[-1, j], tmp$ms[-1, j], tmp$xa[-1, Py])
-      colnames(ret[[j]]) <- c(colP[j], colM[j], colX[Py])
+      Py <- seq(t+1, j*nGP*nP)
+      pams <- c(w, w+1, w+2)
+      ret[[j]] <- cbind(tmp$pa[-1, pams], tmp$ms[-1, pams], tmp$xa[-1, Py])
+      colnames(ret[[j]]) <- c(colP[pams], colM[pams], colX[Py])
       t <- max(Py)
+      w <- w + 3
     }
   }
 
