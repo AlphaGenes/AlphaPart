@@ -2,17 +2,17 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT,
+List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT, int nGP,
                    NumericMatrix ped, IntegerVector P, IntegerVector Px) {
   // --- Temp ---
 
-  int i, j, t, p;
+  int i, j, t, p, pt, mt, k;
 
   // --- Outputs ---
 
-  NumericMatrix pa(nI+1, nT);    // Parent average
-  NumericMatrix ms(nI+1, nT);    // Mendelian sampling
-  NumericMatrix xa(nI+1, nP*nT); // Partitions
+  NumericMatrix pa(nI+1, nT*nGP);    // Parent average
+  NumericMatrix ms(nI+1, nT*nGP);    // Mendelian sampling
+  NumericMatrix xa(nI+1, nP*nT*nGP); // Partitions
   // NOTE: Rcpp::NumericMatrix is filled by 0s by default
 
   // TODO: Maybe we want an algorithm that works on one trait at a time to save on memory?
@@ -31,18 +31,41 @@ List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT,
 
       // Mendelian sampling (MS)
       ms(i, t) = ped(i, 3+t) - pa(i, t);
+      
+      // Gametic partition
+      if (nGP ==3) {
+        pt = t + nT; // paternal trait index
+        mt = t + 2*nT; // maternal trait index
+        pa(i, pt) = c1 * ped(ped(i,1), 3+pt) + c1 * ped(ped(i,1), 3+mt);
+        pa(i, mt) = c2 * ped(ped(i,2), 3+pt) + c2 * ped(ped(i,2), 3+mt);
+        ms(i, mt) = ped(i, 3+mt) - pa(i, mt);
+        ms(i, pt) = ped(i, 3+pt) - pa(i, pt);
+      }
 
       // Parts
 
       // ... for the MS part
       j = Px[t] + P[i];
       xa(i, j) = ms(i, t);
+      
+      if (nGP == 3) {
+        j = Px[t] + P[i] + (nT*nP);
+        xa(i, j) = ms(i, pt);
+        j = Px[t] + P[i] + (nT*nP*2);
+        xa(i, j) = ms(i, mt);
+      }
 
       // ... for the PA parts
       for(p = 0; p < nP; p++) {
         j = Px[t] + p;
         xa(i, j) += c1 * xa(ped(i, 1), j) +
                     c2 * xa(ped(i, 2), j);
+        if (nGP == 3) {
+          j = Px[t] + p + (nT*nP);
+          k = Px[t] + p + (nT*nP*2);
+          xa(i, j) += c1 * xa(ped(i, 1), j) + c1 * xa(ped(i, 1), k);
+          xa(i, k) += c2 * xa(ped(i, 2), j) + c2 * xa(ped(i, 2), k);
+        }
       }
     }
   }

@@ -74,7 +74,11 @@
 #' @param colPath Numeric or character, position or name of a column
 #'   holding path information.
 #' @param colBV Numeric or character, position(s) or name(s) of
-#'   column(s) holding genetic Values.
+#'   column(s) holding genetic values.
+#' @param colPaternalBV Numeric or character, position(s) of column(s) 
+#'   holding the paternal genetic values for IBD partitioning.
+#' @param colMaternalBV Numeric or character, position(s) of column(s) 
+#'   holding the maternal genetic values for IBD partitioning..
 #' @param colBy Numeric or character, position or name of a column
 #'   holding group information (see details).
 #'
@@ -164,6 +168,8 @@ AlphaPart <- function(
   colMid = 3,
   colPath = 4,
   colBV = 5:ncol(x),
+  colPaternalBV = NULL,
+  colMaternalBV = NULL,
   colBy = NULL
 ) {
   ## Test if the data is a data.frame
@@ -175,11 +181,22 @@ AlphaPart <- function(
     length(colFid) > 1 |
     length(colMid) > 1 |
     length(colPath) > 1 |
-    length(colBy) > 1)
+    length(colBy) > 1) |
+    length(colPaternalBV) > 1 |
+    length(colMaternalBV) > 1
   if (test) {
     stop(
       "arguments 'colId', 'colFid', 'colMid', 'colPath', and 'colBy' must be of length 1"
     )
+  }
+  
+  if (!is.null(colPaternalBV) | !is.null(colMaternalBV)){
+    if (is.null(colPaternalBV) | is.null(colMaternalBV)){
+      stop("Both 'colPaternalBV' and 'colMaternalBV' must be provided for IBD partitioning.")
+    }
+    gameticPartition <- TRUE
+  } else {
+    gameticPartition <- FALSE
   }
 
   if (is.null(colBy)) {
@@ -237,6 +254,24 @@ AlphaPart <- function(
     }
     testN <- NULL # not needed anymore
   }
+  
+  if (gameticPartition){
+    if(!is.numeric(colPaternalBV)){
+      testN <- length(colPaternalBV)
+      colPaternalBV <- which(colnames(x) %in% colPaternalBV)
+      if (length(colPaternalBV) != testN) {
+        stop("Identification not valid for 'colPaternalBV' column(s) name", call. = FALSE)
+      }
+    }
+    if(!is.numeric(colMaternalBV)){
+      testN <- length(colMaternalBV)
+      colMaternalBV <- which(colnames(x) %in% colMaternalBV)
+      if (length(colMaternalBV) != testN) {
+        stop("Identification not valid for 'colMaternalBV' column(s) name", call. = FALSE)
+      }
+    }
+    testN <- NULL # not needed anymore
+  }
 
   ## --- Sort and recode pedigree ---
   ## Make sure that identifications are numeric if  recode=FALSE
@@ -252,6 +287,35 @@ AlphaPart <- function(
   if (any(test)) {
     stop("colBV columns must be numeric!")
     str(x)
+  }
+  
+  ## If gametic partitioning, make sure that colPaternalBV and colMaternalBV:
+  ## - are numeric
+  ## - the same length as colBV
+  ## - the columns sum to the colBV columns
+  if (gameticPartition){
+    test <- !sapply(x[, c(colPaternalBV)], is.numeric)
+    if (any(test)){
+      stop("colPaternalBV columns must be numeric!")
+      str(x)
+    }
+    test <- !sapply(x[, c(colMaternalBV)], is.numeric)
+    if (any(test)){
+      stop("colMaternalBV columns must be numeric!")
+      str(x)
+    }
+    test <- length(colPaternalBV) != length(colMaternalBV)
+    if (any(test)){
+      stop("colPaternalBV and colMaternalBV must be of the same length!")
+    }
+    test <- length(colPaternalBV) != length(colBV)
+    if (any(test)){
+      stop("colPaternalBV and colMaternalBV must be of the same length as colBV!")
+    }
+    test <- any(x[, c(colPaternalBV)] + x[, c(colMaternalBV)] != x[, c(colBV)])
+    if (any(test)){
+      stop("The sum of colPaternalBV and colMaternalBV must be equal to colBV for each individual!")
+    }
   }
 
   ## Sort so that parents precede children
@@ -307,7 +371,14 @@ AlphaPart <- function(
       }
     }
   }
-  y <- cbind(y, as.matrix(x[, colBV]))
+  
+  if (!gameticPartition){
+    y <- cbind(y, as.matrix(x[, colBV]))
+    nGP <- 1 # Number of genetic partitions: total
+  } else {
+    y <- cbind(y, as.matrix(x[, colBV]), as.matrix(x[, colPaternalBV]), as.matrix(x[, colMaternalBV]))
+    nGP <- 3 # Number of genetic partitions: total, paternal, maternal
+  }
 
   ## Test if father and mother codes precede children code -
   ## computational engine needs this
@@ -430,6 +501,7 @@ AlphaPart <- function(
       nI = nI,
       nP = nP,
       nT = nT,
+      nGP = nGP,
       ped = y,
       P = as.integer(P),
       Px = as.integer(cumsum(c(0, rep(nP, nT - 1))))
@@ -448,14 +520,23 @@ AlphaPart <- function(
       nG = nG,
       ped = y,
       P = as.integer(P),
-      Px = as.integer(cumsum(c(0, rep(nP, nT - 1))))
+      Px = as.integer(cumsum(c(0, rep(nP, nT - 1)))),
+      g = g
     )
   }
 
   ## Assign nice column names
-  colnames(tmp$pa) <- paste(lT, "_pa", sep = "")
-  colnames(tmp$ms) <- paste(lT, "_ms", sep = "")
-  colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep = "_")))
+  if (!gameticPartition){
+    colnames(tmp$pa) <- paste(lT, "_pa", sep = "")
+    colnames(tmp$ms) <- paste(lT, "_ms", sep = "")
+    colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep = "_"))) 
+  } else {
+    lPT <- colnames(x[, c(colBV, colPaternalBV, colMaternalBV), drop=FALSE])
+    colnames(tmp$pa) <- paste(lPT, "_pa", sep="")
+    colnames(tmp$ms)  <- paste(lPT, "_ms", sep="")
+    colnames(tmp$xa) <- c(t(outer(lPT, lP, paste, sep = "_")))
+  }
+  
 
   ## --- Massage results ---
 
@@ -466,34 +547,62 @@ AlphaPart <- function(
   colP <- colnames(tmp$pa)
   colM <- colnames(tmp$ms)
   colX <- colnames(tmp$xa)
-
-  for (j in 1:nT) {
-    ## j <- 1
-    Py <- seq(t + 1, t + nP)
-    ret[[j]] <- cbind(tmp$pa[-1, j], tmp$ms[-1, j], tmp$xa[-1, Py])
-    colnames(ret[[j]]) <- c(colP[j], colM[j], colX[Py])
-    t <- max(Py)
+  
+  if (!gameticPartition) {
+    for (j in 1:nT) {
+      ## j <- 1
+      Py <- seq(t + 1, t + nP)
+      ret[[j]] <- cbind(tmp$pa[-1, j], tmp$ms[-1, j], tmp$xa[-1, Py])
+      colnames(ret[[j]]) <- c(colP[j], colM[j], colX[Py])
+      t <- max(Py)
+    }
+  } else {
+    for (j in 1:nT) {
+      ## j <- 1
+      Py <- c(j-1+seq(t+1, t+nP), j-1+nT*nP+seq(t+1, t+nP), j-1+2*nT*nP+seq(t+1, t+nP))
+      ret[[j]] <- cbind(tmp$pa[-1, j], tmp$ms[-1, j], tmp$xa[-1, Py])
+      colnames(ret[[j]]) <- c(colP[j], colM[j], colX[Py])
+      t <- max(Py)
+    }
   }
-  tmp <- NULL # not needed anymore
+
+  tmp <- NULL # not needed anymore 
 
   ## Add initial data
 
   if (!groupSummary) {
-    for (i in 1:nT) {
-      ## Hassle in order to get all columns and to be able to work with
-      ##   numeric or character column "names"
-      colX <- colX2 <- colnames(x)
-      names(colX) <- colX
-      names(colX2) <- colX2
-      ## ... put current agv in the last column in original data
-      colX <- c(colX[!(colX %in% colX[colBV[i]])], colX[colBV[i]])
-      ## ... remove other traits
-      colX <- colX[
-        !(colX %in%
-          colX2[(colX2 %in% colX2[colBV]) & !(colX2 %in% colX2[colBV[i]])])
-      ]
-      ret[[i]] <- cbind(x[, colX], as.data.frame(ret[[i]]))
-      rownames(ret[[i]]) <- NULL
+    if (!gameticPartition) {
+      for (i in 1:nT) {
+        ## Hassle in order to get all columns and to be able to work with
+        ##   numeric or character column "names"
+        colX <- colX2 <- colnames(x)
+        names(colX) <- colX
+        names(colX2) <- colX2
+        ## ... put current agv in the last column in original data
+        colX <- c(colX[!(colX %in% colX[colBV[i]])], colX[colBV[i]])
+        ## ... remove other traits
+        colX <- colX[
+          !(colX %in%
+              colX2[(colX2 %in% colX2[colBV]) & !(colX2 %in% colX2[colBV[i]])])
+        ]
+        ret[[i]] <- cbind(x[, colX], as.data.frame(ret[[i]]))
+        rownames(ret[[i]]) <- NULL
+      }
+    } else {
+      for (i in 1:nT) {
+        ## Hassle in order to get all columns and to be able to work with
+        ##   numeric or character column "names"
+        colX <- colX2 <- colnames(x)
+        names(colX) <- colX; names(colX2) <- colX2
+        ## ... put current agv in the last three columns in original data
+        colX <- c(colX[!(colX %in% c(colX[colBV[i]], colX[colPaternalBV[i]], colX[colMaternalBV[i]]))],
+                  colX[colBV[i]], colX[colPaternalBV[i]], colX[colMaternalBV[i]])
+        ## ... remove other traits
+        colX <- colX[!(colX %in% colX2[(colX2 %in% c(colX2[colBV], colX2[colPaternalBV], colX2[colMaternalBV])) & !
+                                         (colX2 %in% c(colX2[colBV[i]], colX2[colPaternalBV[i]], colX2[colMaternalBV[i]]))])]
+        ret[[i]] <- cbind(x[, colX], as.data.frame(ret[[i]]))
+        rownames(ret[[i]]) <- NULL
+      }
     }
   }
 
@@ -507,6 +616,7 @@ AlphaPart <- function(
     lP = lP,
     nT = nT,
     lT = lT,
+    gameticPartition = gameticPartition,
     warn = NULL
   )
   ## names(ret)[nT+1] <- "info"

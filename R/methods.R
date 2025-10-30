@@ -262,6 +262,7 @@ summary.AlphaPart <- function(
     nT = nT,
     lT = lT,
     by = by,
+    gameticPartition = object$info$gameticPartition,
     warn = object$info$warn,
     labelSum = labelSum
   )
@@ -275,6 +276,11 @@ summary.AlphaPart <- function(
     checkCov <- length(cols[-1]) > 1 ## do not run cov if path has 1 level
     paths <- cols
     paths[2:length(paths)] <- ret$info$lP
+    if (object$info$gameticPartition){
+      cols <- c(cols, paste(lT[i], lP, sep="_f_"), paste(lT[i], lP, sep = "_m_")) # Review as not necessarily labelled as such?
+      paths <- cols
+      paths[2:length(paths)] <- paste(ret$info$lP, c(rep("i", nP), rep("f", nP), rep("m", nP)), sep= "_")
+    }
     paths[1] <- labelSum
 
     ## Summarize Variance Partitioning
@@ -526,6 +532,8 @@ plot.summaryAlphaPart <-
     nP <- x$info$nP + x$info$nCov
     ret <- vector(mode = "list", length = nT)
     names(ret) <- x$info$lT
+    
+    ifelse(x$info$gameticPartition, nGP <- 3, nGP <- 1)
 
     ## Axis labels
     if (!is.null(xlab) && length(xlab) > 1)
@@ -613,8 +621,8 @@ plot.summaryAlphaPart <-
     }
     ## Line type
     if (is.null(lineTypeList)) {
-      if (length(lineType) < nP) {
-        lineType <- c(1, rep(x = lineType, times = nP))
+      if (length(lineType) < nP*nGP) {
+        lineType <- c(1, rep(x = lineType, times = nP*nGP))
       } else {
         lineType <- c(1, lineType)
       }
@@ -643,7 +651,7 @@ plot.summaryAlphaPart <-
         if (sortValue) {
           nC <- ncol(tmp0)
           pathStat <- sapply(
-            X = tmp0[, (nC - nP + 1):nC],
+            X = tmp0[, (nC - (nP*nGP) + 1):nC],
             FUN = sortValueFUN,
             na.rm = TRUE
           )
