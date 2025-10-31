@@ -22,7 +22,7 @@ List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT, int nGP,
   //       https://github.com/AlphaGenes/AlphaPart/issues/13
 
   // --- Compute ---
-
+  // review for multiple traits with gametic partitioning
   for(i = 1; i < nI+1; i++) {
     for(t = 0; t < nT; t++) {
       // Parent average (PA)
@@ -45,24 +45,24 @@ List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT, int nGP,
       // Parts
 
       // ... for the MS part
-      j = Px[t] + P[i];
+      j = nGP*Px[t] + P[i];
       xa(i, j) = ms(i, t);
       
       if (nGP == 3) {
-        j = Px[t] + P[i] + (nT*nP);
+        j = nGP*Px[t] + P[i] + nP;
         xa(i, j) = ms(i, pt);
-        j = Px[t] + P[i] + (nT*nP*2);
+        j = nGP*Px[t] + P[i] + nP*2;
         xa(i, j) = ms(i, mt);
       }
 
       // ... for the PA parts
       for(p = 0; p < nP; p++) {
-        j = Px[t] + p;
+        j = nGP*Px[t] + p;
         xa(i, j) += c1 * xa(ped(i, 1), j) +
                     c2 * xa(ped(i, 2), j);
         if (nGP == 3) {
-          j = Px[t] + p + (nT*nP);
-          k = Px[t] + p + (nT*nP*2);
+          j = nGP*Px[t] + p + nP;
+          k = nGP*Px[t] + p + nP*2;
           xa(i, j) += c1 * xa(ped(i, 1), j) + c1 * xa(ped(i, 1), k);
           xa(i, k) += c2 * xa(ped(i, 2), j) + c2 * xa(ped(i, 2), k);
         }

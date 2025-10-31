@@ -531,15 +531,11 @@ AlphaPart <- function(
   } else {
     #lPT <- colnames(x[, c(colBV, colPaternalBV, colMaternalBV), drop=FALSE])
     lP <- c(lP, paste0(lP, "_paternal"), paste0(lP, "_maternal"))
-    lPT <- paste0(
-      rep(lT, each = 3),
-      c("", "_paternal", "_maternal")
-    )
+    lPT <- unlist(lapply(c("","_paternal", "_maternal"), function(s) paste0(lT, s)))
     colnames(tmp$pa) <- paste(lPT, "_pa", sep="")
     colnames(tmp$ms)  <- paste(lPT, "_ms", sep="")
     colnames(tmp$xa) <- c(t(outer(lT, lP, paste, sep = "_")))
   }
-  
 
   ## --- Massage results ---
 
@@ -560,16 +556,14 @@ AlphaPart <- function(
       t <- max(Py)
     }
   } else {
-    w <- 1
     t <- 0
     for (j in 1:nT) {
       ## j <- 1
       Py <- seq(t+1, j*nGP*nP)
-      pams <- c(w, w+1, w+2)
+      pams <- c(j, j+nT, j+2*nT)
       ret[[j]] <- cbind(tmp$pa[-1, pams], tmp$ms[-1, pams], tmp$xa[-1, Py])
       colnames(ret[[j]]) <- c(colP[pams], colM[pams], colX[Py])
       t <- max(Py)
-      w <- w + 3
     }
   }
 
