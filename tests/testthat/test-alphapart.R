@@ -888,7 +888,7 @@ test_that("Test IBD computation, one trait", {
   expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "7"] == 0.75)
 })
 
-test_that("Test IBD computation, one trait", {
+test_that("Test IBD computation, two traits", {
   # dput(AlphaPart.ped) so we have a fixed dataset
   dat <- structure(
     list(
