@@ -22,7 +22,6 @@ List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT, int nGP,
   //       https://github.com/AlphaGenes/AlphaPart/issues/13
 
   // --- Compute ---
-  // review for multiple traits with gametic partitioning
   for(i = 1; i < nI+1; i++) {
     for(t = 0; t < nT; t++) {
       // Parent average (PA)
