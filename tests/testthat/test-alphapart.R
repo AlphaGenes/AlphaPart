@@ -764,3 +764,127 @@ test_that("Test computation - 2nd example", {
   expect_true(part$trait1$trait1_domestic[part$trait1$id == "V"] == 68.875)
   expect_true(part$trait1$trait1_import[part$trait1$id == "V"] == 40.125)
 })
+
+test_that("Test IBD computation, one trait", {
+  # dput(AlphaPart.ped) so we have a fixed dataset
+  dat <- structure(
+    list(
+      id = structure(
+        c(1L, 2L, 3L, 4L, 5L, 6L, 7L),
+        levels = c("1", "2", "3", "4", "5", "6", "7"),
+        class = "factor"
+      ),
+      father = structure(
+        c(1L, 1L, 2L, 1L, 1L, 3L, 4L),
+        levels = c("0", "1", "4", "3"),
+        class = "factor"
+      ),
+      mother = structure(
+        c(1L, 1L, 2L, 1L, 1L, 3L, 4L),
+        levels = c("0", "2", "5", "6"),
+        class = "factor"
+      ),
+      generation = c(1, 1, 2, 1, 1, 2, 3),
+      group = structure(
+        c(1L, 1L, 1L, 2L, 2L, 2L, 2L),
+        levels = c("1", "2"),
+        class = "factor"
+      ),
+      trait1 = c(1, 2, 1.5, 0, 2, 1, 1.25),
+      trait1_paternal = c(0.5, 1, 0.5, 0, 1, 0, 0.5),
+      trait1_maternal = c(0.5, 1, 1, 0, 1, 1, 0.75)
+    ),
+    row.names = c(NA, -7L),
+    class = "data.frame"
+  )
+  part <- AlphaPart(x = dat, colPath = "group", colBV = "trait1", 
+                    colPaternalBV = "trait1_paternal", 
+                    colMaternalBV = "trait1_maternal", verbose = 0)
+  
+  # group 1 is blue and group 2 is red
+  # a_1 & = 0 + \color{blue}{r_1} \\
+  #    & = \color{blue}{1} = 1 \\
+  expect_true(part$trait1$trait1_1[part$trait1$id == "1"] == 1)
+  expect_true(part$trait1$trait1_2[part$trait1$id == "1"] == 0)
+  # a_paternal_1 & = 0 + \color{blue}{r_paternal_1} \\
+  #    & = \color{blue}{0.5} = 0.5 \\
+  expect_true(part$trait1$trait1_1_paternal[part$trait1$id == "1"] == 0.5)
+  expect_true(part$trait1$trait1_2_paternal[part$trait1$id == "1"] == 0)
+  # a_maternal_1 & = 0 + \color{blue}{r_maternal_1} \\
+  #    & = \color{blue}{0.5} = 0.5 \\
+  expect_true(part$trait1$trait1_1_maternal[part$trait1$id == "1"] == 0.5)
+  expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "1"] == 0)
+  # a_2 & = 0 + \color{blue}{r_2} \\
+  #    & = \color{blue}{2} = 2 \\
+  expect_true(part$trait1$trait1_1[part$trait1$id == "2"] == 2)
+  expect_true(part$trait1$trait1_2[part$trait1$id == "2"] == 0)
+  # a_paternal_2 & = 0 + \color{blue}{r_paternal_2} \\
+  #    & = \color{blue}{1} = 1 \\
+  expect_true(part$trait1$trait1_1_paternal[part$trait1$id == "2"] == 1)
+  expect_true(part$trait1$trait1_2_paternal[part$trait1$id == "2"] == 0)
+  # a_maternal_2 & = 0 + \color{blue}{r_maternal_2} \\
+  #    & = \color{blue}{1} = 1 \\
+  expect_true(part$trait1$trait1_1_maternal[part$trait1$id == "2"] == 1)
+  expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "2"] == 0)
+  # a_3 & = \color{blue}{\frac{1}{2} r_1} + \color{blue}{\frac{1}{2} r_2} +
+  #        \color{blue{r_3} \\
+  expect_true(part$trait1$trait1_1[part$trait1$id == "3"] == 1.50)
+  expect_true(part$trait1$trait1_2[part$trait1$id == "3"] == 0)
+  # a_paternal_3 & = \color{blue}{\frac{1}{2} r_paternal_1} + \color{blue}{\frac{1}{2} r_maternal_1} \\
+  #    + \color{blue}{r_paternal_3} \\
+  expect_true(part$trait1$trait1_1_paternal[part$trait1$id == "3"] == 0.5)
+  expect_true(part$trait1$trait1_2_paternal[part$trait1$id == "3"] == 0)
+  # a_maternal_3 & = \color{blue}{\frac{1}{2} r_paternal_2} + \color{blue}{\frac{1}{2} r_maternal_2} \\
+  #    + \color{blue}{r_maternal_3} \\
+  expect_true(part$trait1$trait1_1_maternal[part$trait1$id == "3"] == 1)
+  expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "3"] == 0)
+  # a_4 & = 0 + \color{red}{r_4} \\
+  expect_true(part$trait1$trait1_1[part$trait1$id == "4"] == 0)
+  expect_true(part$trait1$trait1_2[part$trait1$id == "4"] == 0)
+  # a_paternal_4 & = 0 + \color{red}{r_paternal_4} \\
+  expect_true(part$trait1$trait1_1_paternal[part$trait1$id == "4"] == 0)
+  expect_true(part$trait1$trait1_2_paternal[part$trait1$id == "4"] == 0)
+  # a_maternal_4 & = 0 + \color{red}{r_maternal_4} \\
+  expect_true(part$trait1$trait1_1_maternal[part$trait1$id == "4"] == 0)
+  expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "4"] == 0)
+  # a_5 & = 0 + \color{red}{r_5} \\
+  expect_true(part$trait1$trait1_1[part$trait1$id == "5"] == 0)
+  expect_true(part$trait1$trait1_2[part$trait1$id == "5"] == 2)
+  # a_paternal_5 & = 0 + \color{red}{r_paternal_5} \\
+  expect_true(part$trait1$trait1_1_paternal[part$trait1$id == "5"] == 0)
+  expect_true(part$trait1$trait1_2_paternal[part$trait1$id == "5"] == 1)
+  # a_maternal_5 & = 0 + \color{red}{r_maternal_5} \\
+  expect_true(part$trait1$trait1_1_maternal[part$trait1$id == "5"] == 0)
+  expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "5"] == 1)
+  # a_6 & = \color{red}{\frac{1}{2} r_4} + \color{red}{\frac{1}{2} r_5 +
+  #        \color{red}{r_6} \\
+  expect_true(part$trait1$trait1_1[part$trait1$id == "6"] == 0)
+  expect_true(part$trait1$trait1_2[part$trait1$id == "6"] == 1)
+  # a_paternal_6 & = \color{red}{\frac{1}{2} r_paternal_4} + \color{red}{\frac{1}{2} r_maternal_4} \\
+  #    + \color{red}{r_paternal_6} \\
+  expect_true(part$trait1$trait1_1_paternal[part$trait1$id == "6"] == 0)
+  expect_true(part$trait1$trait1_2_paternal[part$trait1$id == "6"] == 0)
+  # a_maternal_6 & = \color{red}{\frac{1}{2} r_paternal_5} + \color{red{\frac{1}{2} r_maternal_5} \\
+  #    + \color{blue}{r_maternal_6} \\
+  expect_true(part$trait1$trait1_1_maternal[part$trait1$id == "6"] == 0)
+  expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "6"] == 1)
+  # a_7 & = \color{blue}{\frac{1}{4} r_1} + \color{blue}{\frac{1}{4} r_2} +
+  #         \color{red{\frac{1}{4} r_4} + \color{red}{\frac{1}{4} r_5} +
+  #        \color{blue}{\frac{1}{2} r_3} + \color{red}{\frac{1}{2} r_6 +
+  #        \color{red}{r_7} \\
+  expect_true(part$trait1$trait1_1[part$trait1$id == "7"] == 0.75)
+  expect_true(part$trait1$trait1_2[part$trait1$id == "7"] == 0.5)
+  # a_paternal_7 & = \color{blue}{\frac{1}{4} r_paternal_1} + \color{blue}{\frac{1}{4} r_maternal_1} \\
+  #    + \color{blue}{\frac{1}{4} r_paternal_2} + \color{blue}{\frac{1}{4} r_maternal_2} \\
+  #    + \color{blue}{\frac{1}{2} r_paternal_3} + \color{blue}{\frac{1}{2} r_maternal_3} \\
+  #    + \color{red}{r_paternal_7} \\
+  expect_true(part$trait1$trait1_1_paternal[part$trait1$id == "7"] == 0.75)
+  expect_true(part$trait1$trait1_2_paternal[part$trait1$id == "7"] == -0.25)
+  # a_maternal_7 & = \color{red}{\frac{1}{4} r_paternal_4} + \color{red}{\frac{1}{4} r_maternal_4} \\
+  #    + \color{red}{\frac{1}{4} r_paternal_5} + \color{red}{\frac{1}{4} r_maternal_5} \\
+  #    + \color{red}{\frac{1}{2} r_paternal_6} + \color{red}{\frac{1}{2} r_maternal_6} \\
+  #    + \color{red}{r_maternal_7} \\
+  expect_true(part$trait1$trait1_1_maternal[part$trait1$id == "7"] == 0)
+  expect_true(part$trait1$trait1_2_maternal[part$trait1$id == "7"] == 0.75)
+})
+
