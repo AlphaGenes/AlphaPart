@@ -6,7 +6,7 @@ List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT, int nGP,
                    NumericMatrix ped, IntegerVector P, IntegerVector Px) {
   // --- Temp ---
 
-  int i, j, t, p, pt, mt, k;
+  int i, j, t, p, pt=0, mt=0, k;
 
   // --- Outputs ---
 
