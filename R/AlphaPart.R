@@ -310,7 +310,7 @@ AlphaPart <- function(
     if (any(test)){
       stop("colPaternalBV and colMaternalBV must be of the same length as colBV!")
     }
-    test <- any(x[, c(colPaternalBV)] + x[, c(colMaternalBV)] != x[, c(colBV)])
+    test <- any(abs(x[, c(colBV)] - x[, c(colPaternalBV)] - x[, c(colMaternalBV)]) > 1e-8)
     if (any(test)){
       stop("The sum of colPaternalBV and colMaternalBV must be equal to colBV for each individual!")
     }
