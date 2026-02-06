@@ -124,9 +124,9 @@ standardPlot <- ggplot(part_stand_long, aes(x = gen, y = value, color = variable
   geom_line(size = 1) +
   labs(title = "Standard Partitioning without IBD information",
        x = "Generation",
-       y = "Allele Dosage Contribution") +
+       y = "Allele dosage contribution") +
   theme_minimal() +
-  scale_colour_manual(values = c("black", "#DC697D" ,"#90D5FF", "#FFB14E" ))
+  scale_colour_manual(values = c("black", "#DC697D" ,"#90D5FF", "#FFE313" ))
 plot(standardPlot)
 ```
 As we only have one UPG, the UPG contribution is the same throughout all generations as shown in the yellow. The within pedigree partitions for male (blue) and female (pink) contributions change over time. All three partitions sum up to give the overall change in allele dosage across generations (in black). In generation 1 and 2, the male contributes more to the allele dosage compared to females since all alternative alleles are found in males. In generation 3, there is one individual who is female with allele dosage 1 and Mendelian sampling term of 0.5. This increases the female contribution to reduce the distance between males and females. The male contribution is only marginally reduced in generation 3 due to contributions from the sire (Mendelian sampling term of 0.5) and grandsire (Mendelain sampling term of 0.4) for the alternative allele. In generation 4, the female contribution is now larger than the male contribution because individual 10 is female and has a large Mendelian sampling term of 1.
@@ -141,7 +141,7 @@ ibdPlot <- ggplot(part_ibd_long, aes(x = gen, y = value, color = variable)) +
   geom_line(size = 1) +
   labs(title = "Partitioning with IBD information",
        x = "Generation",
-       y = "Allele Dosage Contribution") +
+       y = "Allele dosage contribution") +
   theme_minimal() +
   scale_colour_manual(values = c("black", "#FFCCDE", "#C4FFFF", "#FFFFAF", "#FF70A3", "#00AEFF", "#FFE313"))
 plot(ibdPlot)
