@@ -17,6 +17,8 @@ AlphaPart(
   colMid = 3,
   colPath = 4,
   colBV = 5:ncol(x),
+  colPaternalBV = NULL,
+  colMaternalBV = NULL,
   colBy = NULL
 )
 }
@@ -68,7 +70,13 @@ ication if \code{pedType="IPG"} .}
 holding path information.}
 
 \item{colBV}{Numeric or character, position(s) or name(s) of
-column(s) holding genetic Values.}
+column(s) holding genetic values.}
+
+\item{colPaternalBV}{Numeric or character, position(s) of column(s)
+holding the paternal genetic values for IBD partitioning.}
+
+\item{colMaternalBV}{Numeric or character, position(s) of column(s)
+holding the maternal genetic values for IBD partitioning..}
 
 \item{colBy}{Numeric or character, position or name of a column
 holding group information (see details).}

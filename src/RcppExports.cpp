@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // AlphaPartDrop
-List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT, NumericMatrix ped, IntegerVector P, IntegerVector Px);
-RcppExport SEXP _AlphaPart_AlphaPartDrop(SEXP c1SEXP, SEXP c2SEXP, SEXP nISEXP, SEXP nPSEXP, SEXP nTSEXP, SEXP pedSEXP, SEXP PSEXP, SEXP PxSEXP) {
+List AlphaPartDrop(double c1, double c2, int nI, int nP, int nT, int nGP, NumericMatrix ped, IntegerVector P, IntegerVector Px);
+RcppExport SEXP _AlphaPart_AlphaPartDrop(SEXP c1SEXP, SEXP c2SEXP, SEXP nISEXP, SEXP nPSEXP, SEXP nTSEXP, SEXP nGPSEXP, SEXP pedSEXP, SEXP PSEXP, SEXP PxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,10 +21,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type nI(nISEXP);
     Rcpp::traits::input_parameter< int >::type nP(nPSEXP);
     Rcpp::traits::input_parameter< int >::type nT(nTSEXP);
+    Rcpp::traits::input_parameter< int >::type nGP(nGPSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type ped(pedSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type P(PSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type Px(PxSEXP);
-    rcpp_result_gen = Rcpp::wrap(AlphaPartDrop(c1, c2, nI, nP, nT, ped, P, Px));
+    rcpp_result_gen = Rcpp::wrap(AlphaPartDrop(c1, c2, nI, nP, nT, nGP, ped, P, Px));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -50,7 +51,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_AlphaPart_AlphaPartDrop", (DL_FUNC) &_AlphaPart_AlphaPartDrop, 8},
+    {"_AlphaPart_AlphaPartDrop", (DL_FUNC) &_AlphaPart_AlphaPartDrop, 9},
     {"_AlphaPart_AlphaPartDropGroup", (DL_FUNC) &_AlphaPart_AlphaPartDropGroup, 10},
     {NULL, NULL, 0}
 };
