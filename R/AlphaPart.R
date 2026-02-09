@@ -43,6 +43,9 @@
 #'   see arguments \code{colId}, \code{colFid}, \code{colMid},
 #'   \code{colPath}, and \code{colBV}; see also details about the
 #'   validity of pedigree.
+#' @param UPGname Character, a string pattern used to define the nomenclature
+#'   for identifying unknown parent groups. Default is "UPG",
+#'   where unknown parent groups would be identified with "UPG1", "UPG2", etc.
 #' @param pathNA Logical, set dummy path (to "UNKNOWN") where path
 #'   information is unknown (missing).
 #' @param recode Logical, internally recode individual, father and,
@@ -153,6 +156,7 @@
 #' @export
 AlphaPart <- function(
   x,
+  UPGname = "UPG",
   pathNA = FALSE,
   recode = TRUE,
   unknown = NA,
@@ -259,25 +263,62 @@ AlphaPart <- function(
     recode <- TRUE
     x <- x[order(orderPed(ped = x[, c(colId, colFid, colMid)])), ]
   }
-
-  # TODO: Strip out all centering and scaling in favour of
-  #       the incoming metafounder / UPG code plans #22
-  #       https://github.com/AlphaGenes/AlphaPart/issues/22
-  # We should likely just remove all this code in the if (FALSE) block
-  if (FALSE) {
-    # Centering  to make founders has mean zero
-    controlvals <- getScale()
-    if (!missing(scaleEBV)) {
-      controlvals[names(scaleEBV)] <- scaleEBV
+  
+  ## Test for presence of unknown parent groups, labeled "UPG"
+  test <- grepl(UPGname, x[, colId]) | grepl(UPGname, x[, colFid]) | grepl(UPGname, x[, colMid])
+  if (any(test)){
+    ## Test whether each unknown parent group in the pedigree has it's own record.
+    founderTest <- x[!grepl(UPGname, x[, colId]) & (grepl(UPGname, x[, colFid]) | grepl(UPGname, x[, colMid])), c(colFid, colMid)]
+    test <- apply(founderTest, 2, function(z) z %in% x[, colId])
+    if (!all(test)) {
+      stop("Each unknown parent group in the pedigree must have its own record. See vignette founders.Rmd")
     }
-    if (controlvals$center == TRUE | controlvals$scale == TRUE) {
-      x[, colBV] <- sGV(
-        y = x[, c(colId, colFid, colMid, colBV)],
-        center = controlvals$center,
-        scale = controlvals$scale,
-        recode = recode,
-        unknown = unknown
-      )
+    ## Test that each unknown parent group has no duplicated records
+    test <- duplicated(x[grepl(UPGname, x[, colId]), colId]) 
+    if (any(test)) {
+      stop("Each unknown parent group in the pedigree must have only one record. See vignette founders.Rmd")
+    }
+    ## Test whether each unknown parent group record has unknown parents
+    test <- unlist(x[grepl(UPGname, x[, colId]), c(colFid, colMid)]) %in% c(unknown, NA, 0, "")
+    if (!all(test)) {
+      stop("Each unknown parent group record must have unknown parents. See vignette founders.Rmd")
+    }
+    ## Test whether each unknown parent group has their own path defined
+    test <- x[grepl(UPGname, x[, colId]), colId] == x[grepl(UPGname, x[, colId]), colPath]
+    if(!all(test)){
+      stop("Each unknown parent group in the pedigree must have its own path defined. See vignette founders.Rmd")
+    }
+    ## Test whether each unknown parent group has a breeding value defined
+    ## BV could be 0, so check no NAs only or no ""
+    test <- is.na(x[grepl(UPGname, x[, colId]), colBV]) | x[grepl(UPGname, x[, colId]), colBV] == ""
+    if (any(test)) {
+      stop("Each unknown parent group in the pedigree must have a breeding value defined. See vignette founders.Rmd")
+    }
+    ## Test whether each unknown parent group breeding value is equal (or close to) the mean of their founder breeding values
+    ## Gives a warning only.
+    UPG <- x[grepl(UPGname, x[, colId]), colId]
+    for (m in UPG){
+      foundersBV <- sapply(colBV, function(col) 
+        {sum(x[x[,colId] != m & x[,colFid] == m | x[,colMid] == m, col], 
+             na.rm = TRUE)})
+      noFounders <- nrow(x[x[,colId] != m & x[,colFid] == m & x[,colMid] == m, ]) + 
+        0.5*nrow(x[x[,colId] != m & x[,colFid] == m & x[,colMid] != m, ]) + # to consider half-founders
+        0.5*nrow(x[x[,colId] != m & x[,colFid] != m & x[,colMid] == m, ])
+      test <- abs(x[x[, colId] == m, colBV] - foundersBV/noFounders) > 1e-6
+      if (any(test)) {
+        warning(paste("The breeding value for all unknown parent groups is expected to be equal to the mean breeding value of their grouped founders. \n", 
+                      m, " does not meet this expectation. See vignette founders.Rmd", sep = ""))
+      }
+    }
+  } else {
+    ## Test for if the mean of the founders are zero (ignoring half-founders)
+    test <- sapply(colBV, function(col) {
+      mean(x[x[,colFid] %in% c(unknown, NA, 0, "") & x[,colMid] %in% c(unknown, NA, 0, ""), col], na.rm = TRUE)
+    })
+    if (any(abs(test) > 1e-6)) {
+      warning("The mean of the founders breeding values is not zero for atleast 
+              one of the traits. Consider centering or using unknown parent 
+              groups. See vignette founders.Rmd for more.")
     }
   }
 

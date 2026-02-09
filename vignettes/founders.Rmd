@@ -13,13 +13,11 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-TODO: Double check AlphaPart and genetic groups #7 <https://github.com/AlphaGenes/AlphaPart/issues/7>
-
 ## Introduction
 
 -   TODO: Cite Ros' paper on partitioning with non-zero mean in founders and metafounders #42 <https://github.com/AlphaGenes/AlphaPart/issues/42>
 
-This vignette has two objectives. First, through a simple example, demonstrate the different approaches possible by the user for the partitioning of genetic trends using the AlphaPart R package. Second, through a more complex example, explain the different approaches and consequences for the interpretation of results. Thus, within we will clarify the reasoning behind either centering or including unknown parent groups in the partitioning of genetic values to account for non-zero mean in the founders.
+The objective of this vignette is to demonstrate the different approaches possible by the user for the partitioning of genetic trends using the AlphaPart R package. Within, we will clarify the reasoning behind either centering or including unknown parent groups (otherwise known as metafounders) in the partitioning of genetic values to account for non-zero mean in the founders. Throughout, a simple pedigree example is used to demonstrate the approaches and the theory behind them. The example is not intended to be realistic, but rather to be simple and well balanced to clearly demonstrate the principles. Only one trait is used, however, the same principles apply to more complex pedigrees and multiple traits.
 
 ## Load packages
 
@@ -111,9 +109,9 @@ As we can see from the graph above, the partitioned genetic trends are now relat
 
 ### Including unknown parent groups
 
-By including unknown parent groups, the model considers the baseline contribution from the missing ancestry through additional partitions. Where multiple unknown parent groups are assigned, there will be an additional partition for each. This allows us to account for non-zero means in the founders without centering the genetic values and aligns with the assumptions of the model as the mean of the founders' Mendelian sampling term is zero. However, this requires specific modification to the pedigree for `AlphaPart`to produce results without error. First, we will show what **not** to do, then we will show the correct approach and present the theory using one unknown parent group. For multiple unknown parent groups, see the section *Including multiple unknown parent groups*.
+By including unknown parent groups (also known as metafounders), the model considers the baseline contribution from the missing ancestry through additional partitions. Where multiple unknown parent groups are assigned, there will be an additional partition for each. This allows us to account for non-zero means in the founders without centering the genetic values and aligns with the assumptions of the model as the mean of the founders' Mendelian sampling term is zero. However, this requires specific modification to the pedigree for `AlphaPart`to produce results without error. First, we will show what **not** to do, then we will show the correct approach and present the theory using one unknown parent group. For multiple unknown parent groups, see the section *Including multiple unknown parent groups*.
 
-Within the pedigree, we will assign one unknown parent group to all founding individuals.
+Within the pedigree, we will assign one unknown parent group to all founding individuals. The nomenclature for unknown parent groups should be distinct to the other pedigree records, so here we will use the prefix "UPG" for unknown parent groups.
 
 ```{r}
 ped$fid[ped$fid == 0] <- "UPG1"
@@ -140,7 +138,7 @@ ped$trait1 <- as.numeric(ped$trait1)
 ped
 ```
 
-Now we can run AlphaPart as before.
+Now we can run AlphaPart as before. **Note** if a different nomenclature is used for unknown parent groups, such as "MF_1", "MF_2", etc., then an additional parameter `UPGname = "MF_"` should be included in the `AlphaPart()` function to specify the prefix for unknown parent groups. Otherwise the default is "UPG", hence it is not necessary to specify `UPGname` in this example.
 
 ```{r}
 part <- AlphaPart(x = ped, colId = "id", colFid = "fid", colMid = "mid", colPath = "sex", colBV = "trait1")
@@ -163,7 +161,7 @@ partSum <- summary(part, by = "gen")
 plot(partSum, col = c("green", "red", "blue", "black"))
 ```
 
-This plots differs to all previous for two reasons. First, we have an additional partition for the unknown parent group (`UPG1` in green). Second, because of the inclusion of the unknown parent group in the pedigree in generation zero, the x-axis range from 0 to 3 rather than 1 to 3.
+This plots differs to all previous for two reasons. First, we have an additional partition for the unknown parent group (`UPG1` in green). As there is only one unknown parent group for the whole pedigree, the `UPG1` path is horizontal, with a value of 11.5 in all generations (equivalent to UPG1's genetic value). Second, because of the inclusion of the unknown parent group in the pedigree in generation zero, the x-axis range from 0 to 3 rather than 1 to 3.
 
 When we only plot from 1 to 3, the female (red) and male (blue) partition trends match those observed when centering the genetic values. However the sum (black) line now represents the actual genetic trend rather than the centered genetic trend.
 
@@ -283,6 +281,8 @@ partSum <- summary(part, by = "gen")
 plot(partSum, col = c("green", "darkgreen", "red", "blue", "black"))
 ```
 
+With this simple, well-balanced pedigree we observe two horizontal lines for both `UPG1` and `UPG2`. In all generations, both `UPG1` and `UPG2` have the same proportion of descendants (50:50), however `UPG2` has a higher genetic value of 17.0 compared to 5.5 for `UPG1`. Each unknown parent group path is equivalent to the proportion of descendants in each generation multiplied by the genetic value of the unknown parent group. Thus, `UPG1` has a contribution of 5.5x50%=2.75 and `UPG2` has a contribution of 17x50%=8.5 in all generations. If the proportions of descendants from each unknown parent group were different across generations, the contributions from each unknown parent group would differ across generations, thus the lines would not be horizontal.
+
 If we sum the contributions from `UPG1` and `UPG2`, the results are equivalent to using a single unknown parent group as shown previously. This is not true for all cases, but holds for this since the mean of the two unknown parent groups are equal to the mean of all the founders.
 
 ```{r}
@@ -330,12 +330,9 @@ These match the results in the `part[["trait1"]]` dataframe, where `part[["trait
 part[["trait1"]]
 ```
 
-## Non-zero mean in genetic values of founders in complex examples
 
-The above toy example demonstrates the different approaches possible for the user and how to implement them when the founders genetic values have non-zero means. However, as the pedigree is well balanced, the observed difference is minimal. In more complex pedigrees, the difference will be more pronounced and important. Below, we will demonstrate this with complex examples and focus more on the interpretation of the results.
-
--   TODO: More complex example(s)
 
 ## References
 
+- Quass, R.L., and Pollak, E.J. (1981) Modified Equations for Sire Models with Groups. Journal of Dairy Science, 64(9):1868-1872. https://doi.org/10.3168/jds.S0022-0302(81)82778-6
 -   TODO: Cite Ros' paper on partitioning with non-zero mean in founders and metafounders #42 <https://github.com/AlphaGenes/AlphaPart/issues/42>
