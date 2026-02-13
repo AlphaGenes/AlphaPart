@@ -489,7 +489,8 @@ AlphaPart <- function(
       nG = nG,
       ped = y,
       P = as.integer(P),
-      Px = as.integer(cumsum(c(0, rep(nP, nT - 1))))
+      Px = as.integer(cumsum(c(0, rep(nP, nT - 1)))),
+      g = as.integer(g)
     )
   }
 
