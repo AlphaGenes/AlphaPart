@@ -1,6 +1,6 @@
 ---
 title: "AlphaPart: Partitioning with idenity-by-descent (IBD) information"
-author: "Ros Craddock and Gregor Gorjanc"
+author: "Rosalind Craddock and Gregor Gorjanc"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -12,13 +12,160 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-TODO: Implement gametic/IBD/phased-based partitioning #18
-      https://github.com/AlphaGenes/AlphaPart/issues/18
       
 ## Introduction
+Through application of the gametes model into AlphaPart, it is possible to partition genetic values (such as phased genotype probabilities) on identity-by-descent (IBD) information. This allows the partitioning of genetic values into contributions from individual haplotypes or chromosome segments to leverage phased genotype data. Thus, providing further insights into the sources of genetic variation within a population. This vignette will demonstrate how to use AlphaPart for partitioning with IBD information and, briefly, how to interpret the results.
 
 * TODO: Cite Ros's paper on partitioning with IBD information #44
         https://github.com/AlphaGenes/AlphaPart/issues/44
+
+## Load packages
+```{r}
+rm(list=ls())
+library(AlphaPart)
+```
+
+## Data preparation
+To demonstrate partitioning with IBD information, we will use a simulated dataset with id, mother id, father id, and phased genotype probabilities for each individual. For this example, we have simulated 10 individuals, all with phased genotypes at a single locus (e.g., a SNP). This is for demonstration purpose only; in practice, you would use a larger datasets to achieve different results to without IBD information.
+
+Note here that we include one UPG to handle the non-zero mean of the allele dosages in the founders. For more information on this, please refer to the `founders.rmd` vignette.
+
+### Dataset
+```{r}
+ped <- data.frame(
+  id = c("UPG1", 1:10),
+  fid = c(0, "UPG1", "UPG1", "UPG1", "UPG1", "UPG1", 2, 4, 4, 7, 8),
+  mid = c(0, "UPG1", "UPG1", "UPG1", "UPG1", "UPG1", 1, 3, 5, 6, 9),
+  group = c("UPG1", "female", "male", "female", "male", "female", "female", "male", "male", "female", "female"),
+  gen = c(0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4),
+  locus1_geno_probAA = c(NA, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0),
+  locus1_geno_probBA = c(NA, 0.5, 0.5, 0, 0.5, 0, 0, 1, 1, 1, 0),
+  locus1_geno_probAB = c(NA, 0.5, 0.5, 0, 0.5, 0, 0, 0, 0, 0, 0),
+  locus1_geno_probBB = c(NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+)
+
+ped
+```
+
+### Reorganise data for AlphaPart
+There are two steps to reorganise the data for AlphaPart:
+1. Convert the phased genotype probabilities into allele dosages (or allele frequencies, if preferred). Call this column locus1_geno
+2. Convert the phased genotype probabilities into two columns: paternal_BV and maternal_BV, representing the contributions from the paternal and maternal haplotypes, respectively.
+
+```{r}
+# Step 1: Calculate allele dosages
+ped$locus1_geno <- with(ped,
+  locus1_geno_probAA * 0 +
+  locus1_geno_probBA * 1 +
+  locus1_geno_probAB * 1 +
+  locus1_geno_probBB * 2
+)
+
+# Estimate for the UPG using the mean of the founders
+ped$locus1_geno[ped$id == "UPG1"] <- mean(ped$locus1_geno[which(ped$gen == 1)], na.rm = TRUE)
+ped
+```
+```{r}
+# Step 2: Calculate paternal and maternal contributions
+ped$locus1_paternal <- with(ped,
+  locus1_geno_probAA * 0 +
+  locus1_geno_probBA * 1 +
+  locus1_geno_probAB * 0 +
+  locus1_geno_probBB * 1
+)
+ped$locus1_maternal <- with(ped,
+  locus1_geno_probAA * 0 +
+  locus1_geno_probBA * 0 +
+  locus1_geno_probAB * 1 +
+  locus1_geno_probBB * 1
+)
+
+# For UPG, just half the allele dosage
+ped$locus1_paternal[ped$id == "UPG1"] <- ped$locus1_geno[ped$id == "UPG1"] / 2
+ped$locus1_maternal[ped$id == "UPG1"] <- ped$locus1_geno[ped$id == "UPG1"] / 2
+
+ped
+```
+
+## Partitioning with AlphaPart
+Now that the data is prepared, we can use AlphaPart to partition by IBD. Compared to the standard AlphaPart, this requires two additional arguments to be defined:
+1. colPaternalBV: the column name or number representing the paternal haplotype contributions
+2. colMaternalBV: the column name or number representing the maternal haplotype contributions
+
+```{r}
+part_ibd <- AlphaPart(
+  x = ped[c(1:5,10:12)],
+  colId = "id",
+  colFid = "fid",
+  colMid = "mid",
+  colPath = "group",
+  colBV = "locus1_geno",
+  colPaternalBV = "locus1_paternal",
+  colMaternalBV = "locus1_maternal"
+)
+
+part_ibd[["locus1_geno"]]
+
+```
+Both results for standard partitioning and partitioning using IBD information are recorded within the same table for trait "locus1_geno". There are results for the parent average, the Mendelian sampling term, and finally the partitions for both standard and IBD partitioning. In the next section, we will use these results to summarise and plot the contributions over generations and briefly discuss interpretation.
+
+## Interpretting the results
+
+### Plot the results by generation first without IBD information
+```{r}
+part_ibdSum <- summary(part_ibd, by = "gen")
+# First lets plot the standard partitioning without IBD information
+part_stand_sum <- part_ibdSum[["locus1_geno"]][c(1,3,4,5,6)]
+# Convert to long format
+part_stand_long <- reshape2::melt(part_stand_sum, id.vars = "gen")
+# Plot standard partitioning
+library(ggplot2)
+standardPlot <- ggplot(part_stand_long, aes(x = gen, y = value, color = variable)) +
+  geom_line(size = 1) +
+  labs(title = "Standard Partitioning without IBD information",
+       x = "Generation",
+       y = "Allele dosage contribution") +
+  theme_minimal() +
+  scale_colour_manual(values = c("black", "#DC697D" ,"#90D5FF", "#FFE313" ))
+plot(standardPlot)
+```
+As we only have one UPG, the UPG contribution is the same throughout all generations as shown in the yellow. The within pedigree partitions for male (blue) and female (pink) contributions change over time. All three partitions sum up to give the overall change in allele dosage across generations (in black). In generation 1 and 2, the male contributes more to the allele dosage compared to females since all alternative alleles are found in males. In generation 3, there is one individual who is female with allele dosage 1 and Mendelian sampling term of 0.5. This increases the female contribution to reduce the distance between males and females. The male contribution is only marginally reduced in generation 3 due to contributions from the sire (Mendelian sampling term of 0.5) and grandsire (Mendelain sampling term of 0.4) for the alternative allele. In generation 4, the female contribution is now larger than the male contribution because individual 10 is female and has a large Mendelian sampling term of 1.
+
+### Plot the results by generation with IBD information
+```{r}
+part_ibd_only <- part_ibdSum[["locus1_geno"]][c(1,3,7:12)]
+# Convert to long format
+part_ibd_long <- reshape2::melt(part_ibd_only, id.vars = "gen")
+# Plot IBD partitioning
+ibdPlot <- ggplot(part_ibd_long, aes(x = gen, y = value, color = variable)) +
+  geom_line(size = 1) +
+  labs(title = "Partitioning with IBD information",
+       x = "Generation",
+       y = "Allele dosage contribution") +
+  theme_minimal() +
+  scale_colour_manual(values = c("black", "#FFCCDE", "#C4FFFF", "#FFFFAF", "#FF70A3", "#00AEFF", "#FFE313"))
+plot(ibdPlot)
+```
+When partitioning with IBD information we double the number of partitions compared to standard partitioning. This is because we now have separate contributions from paternal and maternal haplotypes for each group. The black line is the same as before and is equivalent to the sum of all the six IBD partitions. Both UPG_paternal and UPG_maternal are equivalent as expected with a value of 0.3 in all generations. Generally the female_maternal path is negative, with the exception of generation 4. The male_paternal partition has a consistently high contribution across all generations.
+
+### Compare both without and with IBD information
+```{r}
+# Plot both graphs side by side
+part_ibd_long$type <- "With IBD"
+part_stand_long$type <- "Without IBD"
+combined_part <- rbind(part_ibd_long, part_stand_long)
+combinedPlot <- ggplot(combined_part, aes(x = gen, y = value, color = variable)) +
+  geom_line(size = 1) +
+  labs(title = "Partitioning Comparison",
+       x = "Generation",
+       y = "Allele Dosage Contribution") +
+  theme_minimal() +
+  scale_colour_manual(values = c("black", "#DC697D" ,"#90D5FF", "#FFB14E" ,
+                                 "#FFCCDE", "#C4FFFF", "#FFFFAF", "#FF70A3", "#00AEFF", "#FFE313")) +
+  facet_wrap(~type)
+plot(combinedPlot)
+```
+When visualised side by side, its clear to see that the male partition (on the right) is largely driven by the paternal inheritance of the alternative allele (on the left). The same is observed in the female partition (right) which is largely driven by the maternal inheritance of the normal allele (left). Given in this simplistic example all males are sires and all females (except one) are dams, this is expected. In practice, with larger datasets, multiple loci, and more complex pedigrees and/or grouping, the IBD partitioning can provide further insights into the sources of genetic variation within a population. With multiple loci, the described process is repeated across each locus. Thus, each locus is assumed independent when partitioning in AlphaPart but the results can be aggregated across loci post-partitioning.
 
 ## References
 
